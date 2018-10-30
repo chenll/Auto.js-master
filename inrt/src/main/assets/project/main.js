@@ -17,22 +17,16 @@
 
 //查看辅助并请求授权
 auto();
-
-
-
+toast("脚本开始运行")
 var atyMain = "com.yanhui.qktx.activity.MainActivity";
 var atyWeb = "com.yanhui.qktx.processweb.NewsProcessWebViewActivity";
-
-
-var r = http.get("http://www.youjiuo.com:808/appData.ashx?ApiVersion=2.2.7");
+//var r = http.get("http://www.youjiuo.com:808/appData.ashx?ApiVersion=2.2.7");
+var r = http.get("http://www.mdmlt.com:808/appData.ashx?ApiVersion=2.2.7");
 if (r == null || r.statusCode != 200) {
     toast("数据初始失败,请检查网络,稍后再试...");
     exit();
 }
-var jsonPaser = new com.stardust.GsonParse();
-var taskbeanresulr = jsonPaser.parse(r.body.string());
-
-
+var taskbeanresulr = com.stardust.GsonParse.parse(r.body.string());
 if (taskbeanresulr == null || taskbeanresulr.getData() == null || taskbeanresulr.getData().isEmpty()) {
     toast("数据解析失败,稍后再试...");
     exit();
@@ -48,7 +42,6 @@ if (!isSussed) {
 
 //等待进入页面
 waitForActivity(atyMain, [period = 200]);
-sleep(1000);
 closeHomeDialog();
 var viewpager = id("com.yanhui.qktx:id/activity_main_viewpager").findOne().bounds();
 var index = 0;
@@ -72,13 +65,28 @@ function executeTask() {
     //    waitForActivity("com.yanhui.qktx.activity.MainActivity", [period = 200]);
     sleep(1000);
     closeHomeDialog();
-    var title = id("com.yanhui.qktx:id/tv_title").find()[index];
-    if (title == null) {
+    if (index == -1) {
         swipe(300, viewpager.bottom - 1, 300, viewpager.top + 1, task.getSlidingSpeed());
         index = 1;
-        title = id("com.yanhui.qktx:id/tv_title").find()[index];
     }
-
+    var title = id("com.yanhui.qktx:id/tv_title").find()[index];
+    var sleepTimes = 0;
+    if(title==null){
+        if(currentActivity() != atyMain){
+            while(currentActivity() != atyMain && sleepTimes<10){
+                sleep(1000);
+                sleepTimes++;
+            }
+            title = id("com.yanhui.qktx:id/tv_title").find()[index];
+        }else{
+            toast("好像出错了...")
+            exit();
+        }
+    }
+    if(title==null){
+      toast("好像出错了...")
+      exit();
+    }
 
     var titleStr = title.text();
     //跳过广告
@@ -91,7 +99,9 @@ function executeTask() {
             index++;
         }
         executeTask();
-    } else if (com.stardust.datebase.greenDao.GreenDaoManger.isInserted(titleStr)) {
+        return;
+    }
+    if (com.stardust.datebase.greenDao.GreenDaoManger.isInserted(titleStr)) {
         toast("已经点过了，直接跳过");
         if (title.parent().bounds().bottom == viewpager.bottom) {
             index = -1
@@ -99,19 +109,20 @@ function executeTask() {
             index++;
         }
         executeTask();
-    } else {
-        //点到最下面一个了
+        return;
+    }
+    if (currentActivity() == atyMain) {
         title.parent().click();
         if (titleStr != null && titleStr != "") {
             com.stardust.datebase.greenDao.GreenDaoManger.insert(titleStr);
         }
+        //点到最下面一个了
         if (title.parent().bounds().bottom == viewpager.bottom) {
             index = -1
         } else {
             index++;
         }
         sleep(1000);
-
         //SingleSlideTimes 滑动次数
         for (var i = 0; i < task.getSingleSlideTimes(); i++) {
             if (currentActivity() == atyWeb) {
@@ -124,5 +135,9 @@ function executeTask() {
         //getWaitForTime总阅读时间
         sleep(task.getWaitForTime());
         back();
+        return;
     }
+    toast("好像出错了...")
+    exit();
+
 }

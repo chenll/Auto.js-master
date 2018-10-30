@@ -23,7 +23,7 @@
     <Button
         android:id="@+id/btn_start"
         android:layout_width="match_parent"
-        android:text="开始运行"
+        android:text="趣看天下"
         android:layout_height="wrap_content"/>
 
     <com.stardust.autojs.core.console.ConsoleView

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 
 import com.stardust.auojs.inrt.BuildConfig;
 import com.stardust.auojs.inrt.LogActivity;
@@ -63,9 +64,12 @@ public class AssetsProjectLauncher {
         }
     }
 
+    public boolean isRunning() {
+        return mScriptExecution != null && mScriptExecution.getEngine() != null && !mScriptExecution.getEngine().isDestroyed();
+    }
+
     private void runScript() {
-        if (mScriptExecution != null && mScriptExecution.getEngine() != null &&
-                !mScriptExecution.getEngine().isDestroyed()) {
+        if (mScriptExecution != null && mScriptExecution.getEngine() != null && !mScriptExecution.getEngine().isDestroyed()) {
             return;
         }
         try {

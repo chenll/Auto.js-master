@@ -1,15 +1,31 @@
+//console.error("打包出错啦~ 使用文件夹打包请把主脚本改名为main.js");
 "auto"
+//toast("脚本开始运行")
+//var readCount = dialogs.input("请输入阅读数量", "3");
+//if(readCount==0){
+//    exit();
+//}
+
+//com.stardust.datebase.greenDao.GreenDaoManger.insert("123")
+//if(com.stardust.datebase.greenDao.GreenDaoManger.isInserted("123")){
+//toast("已经添加")
+//}else{
+//toast("---")
+//}
+//exit();
+
+
+//查看辅助并请求授权
 auto();
-toast("[聚看点]脚本开始运行");
-var pName = "com.xiangzi.jukandian";
-var atyMain = "com.xiangzi.jukandian.activity.MainActivity";
-var atyWeb = "com.xiangzi.jukandian.activity.WebViewActivity";
+toast("[趣看天下]脚本开始运行")
+var atyMain = "com.yanhui.qktx.activity.MainActivity";
+var atyWeb = "com.yanhui.qktx.processweb.NewsProcessWebViewActivity";
+//var r = http.get("http://www.youjiuo.com:808/appData.ashx?ApiVersion=2.2.7");
 var r = http.get("http://www.mdmlt.com:808/appData.ashx?ApiVersion=2.2.7");
 if (r == null || r.statusCode != 200) {
     toast("数据初始失败,请检查网络,稍后再试...");
     exit();
 }
-
 var taskbeanresulr = com.stardust.GsonParse.parse(r.body.string());
 if (taskbeanresulr == null || taskbeanresulr.getData() == null || taskbeanresulr.getData().isEmpty()) {
     toast("数据解析失败,稍后再试...");
@@ -18,33 +34,22 @@ if (taskbeanresulr == null || taskbeanresulr.getData() == null || taskbeanresulr
 
 var task = taskbeanresulr.getData().get(0);
 //打开app
-if (!app.launchApp("聚看点")) {
-    toast("[聚看点]打开失败,请检查你是否安装");
+var isSussed = app.launchApp("趣看天下");
+if (!isSussed) {
+    toast("[趣看天下]打开失败,请检查你是否安装");
     exit();
 }
 
-
-
+//等待进入页面
 waitForActivity(atyMain, [period = 200]);
-
 closeHomeDialog();
-
-
-var viewpager = id(getViewId("view_pager")).findOne().bounds();
-if(viewpager==null){
-    exit();
-}else{
-}
+var viewpager = id("com.yanhui.qktx:id/activity_main_viewpager").findOne().bounds();
 var index = 0;
 for (var i = 0; i < task.getTotalNumber(); i++) {
     executeTask();
 }
 toast("任务运行结束")
 exit();
-
-function getViewId(){
-    return packageName +":id/"+arguments[0];
-}
 
 //关闭首页弹窗
 function closeHomeDialog() {

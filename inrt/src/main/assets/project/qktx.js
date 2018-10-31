@@ -20,8 +20,7 @@ auto();
 toast("[趣看天下]脚本开始运行")
 var atyMain = "com.yanhui.qktx.activity.MainActivity";
 var atyWeb = "com.yanhui.qktx.processweb.NewsProcessWebViewActivity";
-//var r = http.get("http://www.youjiuo.com:808/appData.ashx?ApiVersion=2.2.7");
-var r = http.get("http://www.mdmlt.com:808/appData.ashx?ApiVersion=2.2.7");
+var r = http.get("http://api.u9er.com/appData.ashx?ApiVersion=2.2.7");
 if (r == null || r.statusCode != 200) {
     toast("数据初始失败,请检查网络,稍后再试...");
     exit();

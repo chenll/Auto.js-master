@@ -4,7 +4,7 @@ toast("[聚看点]脚本开始运行");
 var pName = "com.xiangzi.jukandian";
 var atyMain = "com.xiangzi.jukandian.activity.MainActivity";
 var atyWeb = "com.xiangzi.jukandian.activity.WebViewActivity";
-var r = http.get("http://www.mdmlt.com:808/appData.ashx?ApiVersion=2.2.7");
+var r = http.get("http://api.u9er.com/appData.ashx?ApiVersion=2.2.7");
 if (r == null || r.statusCode != 200) {
     toast("数据初始失败,请检查网络,稍后再试...");
     exit();

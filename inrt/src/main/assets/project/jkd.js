@@ -30,11 +30,8 @@ waitForActivity(atyMain, [period = 200]);
 closeHomeDialog();
 
 
-var viewpager = id(getViewId("view_pager")).findOne().bounds();
-if(viewpager==null){
-    exit();
-}else{
-}
+var viewpager = id("com.xiangzi.jukandian:id/view_pager").findOne().bounds();
+
 var index = 0;
 for (var i = 0; i < task.getTotalNumber(); i++) {
     executeTask();
@@ -42,9 +39,7 @@ for (var i = 0; i < task.getTotalNumber(); i++) {
 toast("任务运行结束")
 exit();
 
-function getViewId(){
-    return packageName +":id/"+arguments[0];
-}
+
 
 //关闭首页弹窗
 function closeHomeDialog() {
@@ -64,7 +59,7 @@ function executeTask() {
         swipe(300, viewpager.bottom - 1, 300, viewpager.top + 1, task.getSlidingSpeed());
         index = 1;
     }
-    var title = id("com.yanhui.qktx:id/tv_title").find()[index];
+    var title = id("com.xiangzi.jukandian:id/item_artical_three_title_tv").find()[index];
     var sleepTimes = 0;
     if(title==null){
         if(currentActivity() != atyMain){
@@ -72,7 +67,7 @@ function executeTask() {
                 sleep(1000);
                 sleepTimes++;
             }
-            title = id("com.yanhui.qktx:id/tv_title").find()[index];
+            title = id("com.xiangzi.jukandian:id/item_artical_three_title_tv").find()[index];
         }else{
             toast("好像出错了...")
             exit();

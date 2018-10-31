@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 
 import com.stardust.auojs.inrt.BuildConfig;
 import com.stardust.auojs.inrt.LogActivity;
@@ -88,8 +87,7 @@ public class AssetsProjectLauncher {
             return;
         }
         PFiles.copyAsset(mActivity, PFiles.join(mAssetsProjectDir, ProjectConfig.CONFIG_FILE_NAME), projectConfigPath);
-        PFiles.copyAsset(mActivity, PFiles.join(mAssetsProjectDir, mProjectConfig.getMainScriptFile()),
-                mMainScriptFile.getPath());
+        PFiles.copyAsset(mActivity, PFiles.join(mAssetsProjectDir, mProjectConfig.getMainScriptFile()), mMainScriptFile.getPath());
         for (String asset : mProjectConfig.getAssets()) {
             PFiles.copyAsset(mActivity, PFiles.join(mAssetsProjectDir, asset), PFiles.join(mProjectDir, asset));
         }

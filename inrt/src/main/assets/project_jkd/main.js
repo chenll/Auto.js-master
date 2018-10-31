@@ -1,9 +1,9 @@
 "auto"
 auto();
-toast("[蚂蚁头条]脚本开始运行");
-var pName = "com.ldzs.zhangxin";
-var atyMain = "com.weishang.wxrd.activity.MainActivity";
-var atyWeb = "com.weishang.wxrd.activity.WebViewActivity";
+toast("[聚看点]脚本开始运行");
+var pName = "com.xiangzi.jukandian";
+var atyMain = "com.xiangzi.jukandian.activity.MainActivity";
+var atyWeb = "com.xiangzi.jukandian.activity.WebViewActivity";
 var r = http.get("http://api.u9er.com/appData.ashx?ApiVersion=2.2.7");
 if (r == null || r.statusCode != 200) {
     toast("数据初始失败,请检查网络,稍后再试...");
@@ -18,27 +18,19 @@ if (taskbeanresulr == null || taskbeanresulr.getData() == null || taskbeanresulr
 
 var task = taskbeanresulr.getData().get(0);
 //打开app
-if (!app.launchApp("蚂蚁头条")) {
-    toast("[蚂蚁头条]打开失败,请检查你是否安装");
-    exit();
-}
-
-var mainSleepTimes = 0;
-if (currentActivity() != atyMain) {
-    while (currentActivity() != atyMain && mainSleepTimes < 10) {
-        sleep(1000);
-        mainSleepTimes++;
-        closeHomeDialog();
-    }
-} else {
-    toast("好像出错了...")
+if (!app.launchApp("聚看点")) {
+    toast("[聚看点]打开失败,请检查你是否安装");
     exit();
 }
 
 
 
+waitForActivity(atyMain, [period = 200]);
 
-var viewpager = id("com.ldzs.zhangxin:id/vp_pager").findOne().bounds();
+closeHomeDialog();
+
+
+var viewpager = id("com.xiangzi.jukandian:id/view_pager").findOne().bounds();
 
 var index = 0;
 for (var i = 0; i < task.getTotalNumber(); i++) {
@@ -51,59 +43,50 @@ exit();
 
 //关闭首页弹窗
 function closeHomeDialog() {
-    var imgClose = id("com.ldzs.zhangxin:id/iv_close_packet").find();
+    var imgClose = id("com.yanhui.qktx:id/img_close").find();
     if (imgClose != null && imgClose[0] != null) {
         imgClose[0].click();
-        sleep(1000);
     }
-
 }
 
-//关闭金币领取弹窗
-function closeGoldialog() {
-    var imgClose = id("com.ldzs.zhangxin:id/btn_close").find();
-    if (imgClose != null && imgClose[0] != null) {
-        imgClose[0].click();
-        sleep(1000);
-    }
-
-}
 
 function executeTask() {
     //等待进入页面
-    closeGoldialog();
+    //    waitForActivity("com.yanhui.qktx.activity.MainActivity", [period = 200]);
     sleep(1000);
     closeHomeDialog();
     if (index == -1) {
         swipe(300, viewpager.bottom - 1, 300, viewpager.top + 1, task.getSlidingSpeed());
-        index = 1;
+        index = 0;
     }
-    var title = id("com.ldzs.zhangxin:id/tv_article_title").find()[index];
+    var title = id("com.xiangzi.jukandian:id/item_artical_three_title_tv").find()[index];
 
-    var titleGetTimes = 0;
-    while (title == null && titleGetTimes < 3) {
-        swipe(300, viewpager.bottom - 1, 300, viewpager.top + 1, task.getSlidingSpeed());
-        titleGetTimes++;
-        index = 1;
-        title = id("com.ldzs.zhangxin:id/tv_article_title").find()[index];
-    }
+      var titleGetTimes = 0;
+        while (title == null && titleGetTimes < 3) {
+            swipe(300, viewpager.bottom - 1, 300, viewpager.top + 100, task.getSlidingSpeed());
+//            swipe(300, viewpager.bottom - 1, 300, viewpager.bottom-200, task.getSlidingSpeed());
+            titleGetTimes++;
+            index = 0;
+            title = id("com.xiangzi.jukandian:id/item_artical_three_title_tv").find()[index];
+        }
+
 
     var sleepTimes = 0;
-    if (title == null) {
-        if (currentActivity() != atyMain) {
-            while (currentActivity() != atyMain && sleepTimes < 10) {
+    if(title==null){
+        if(currentActivity() != atyMain){
+            while(currentActivity() != atyMain && sleepTimes<10){
                 sleep(1000);
                 sleepTimes++;
             }
-            title = id("com.ldzs.zhangxin:id/tv_article_title").find()[index];
-        } else {
-            toast("好像出错了1...")
+            title = id("com.xiangzi.jukandian:id/item_artical_three_title_tv").find()[index];
+        }else{
+            toast("好像出错了...")
             exit();
         }
     }
-    if (title == null) {
-        toast("好像出错了2...")
-        exit();
+    if(title==null){
+      toast("好像出错了...")
+      exit();
     }
 
     var titleStr = title.text();
@@ -130,13 +113,12 @@ function executeTask() {
         return;
     }
     if (currentActivity() == atyMain) {
-        var titleBounds = title.bounds();
-        title.parent().parent().click();
+        title.parent().click();
         if (titleStr != null && titleStr != "") {
             com.stardust.datebase.greenDao.GreenDaoManger.insert(titleStr);
         }
         //点到最下面一个了
-        if (title.parent().parent().bounds().bottom == viewpager.bottom) {
+        if (title.parent().bounds().bottom == viewpager.bottom) {
             index = -1
         } else {
             index++;
@@ -144,9 +126,7 @@ function executeTask() {
         sleep(1000);
         //SingleSlideTimes 滑动次数
         for (var i = 0; i < task.getSingleSlideTimes(); i++) {
-
             if (currentActivity() == atyWeb) {
-                closeGoldialog();
                 // getSlidingSpeed滑动速度
                 swipe(300, 1600, 300, 1020, task.getSlidingSpeed());
                 //SlidingInterval 每次滑动间隔时间
@@ -158,7 +138,7 @@ function executeTask() {
         back();
         return;
     }
-    toast("好像出错了1111...")
+    toast("好像出错了...")
     exit();
 
 }

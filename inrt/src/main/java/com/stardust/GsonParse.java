@@ -8,9 +8,9 @@ import java.util.List;
 public class GsonParse {
 
     public static TaskBean parse(String str) {
-        if (1 == 1) {
-            return addTest();
-        }
+//        if (1 == 1) {
+//            return addTest();
+//        }
         Gson gson = new Gson();
         TaskBean taskBean = gson.fromJson(str, TaskBean.class);
         return taskBean;

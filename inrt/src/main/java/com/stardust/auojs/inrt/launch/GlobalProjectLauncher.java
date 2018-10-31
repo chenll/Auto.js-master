@@ -1,10 +1,8 @@
 package com.stardust.auojs.inrt.launch;
 
-import android.app.Activity;
 import android.content.Context;
 
 import com.stardust.app.GlobalAppContext;
-import com.stardust.auojs.inrt.App;
 
 /**
  * Created by Stardust on 2018/3/21.
@@ -21,6 +19,6 @@ public class GlobalProjectLauncher extends AssetsProjectLauncher {
     }
 
     GlobalProjectLauncher(Context context) {
-        super("project", context);
+        super("project_jkd", context);
     }
 }

@@ -76,15 +76,17 @@ function executeTask() {
     closeHomeDialog();
     if (index == -1) {
         swipe(300, viewpager.bottom - 1, 300, viewpager.top + 1, task.getSlidingSpeed());
-        index = 1;
+        index = 0;
     }
     var title = id("com.ldzs.zhangxin:id/tv_article_title").find()[index];
 
     var titleGetTimes = 0;
     while (title == null && titleGetTimes < 3) {
-        swipe(300, viewpager.bottom - 1, 300, viewpager.top + 1, task.getSlidingSpeed());
+        swipe(300, viewpager.bottom - 1, 300, viewpager.top + 100, task.getSlidingSpeed());
+//            swipe(300, viewpager.bottom - 1, 300, viewpager.bottom-200, task.getSlidingSpeed());
+
         titleGetTimes++;
-        index = 1;
+        index = 0;
         title = id("com.ldzs.zhangxin:id/tv_article_title").find()[index];
     }
 

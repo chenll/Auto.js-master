@@ -1,13 +1,14 @@
 package com.stardust.auojs.inrt;
 
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Toast;
 
+import com.stardust.app.GlobalAppContext;
 import com.stardust.auojs.inrt.autojs.AutoJs;
+import com.stardust.auojs.inrt.launch.AssetsProjectLauncher;
 import com.stardust.auojs.inrt.launch.GlobalProjectLauncher;
 import com.stardust.autojs.core.console.ConsoleView;
 import com.stardust.autojs.core.console.StardustConsole;
@@ -17,6 +18,7 @@ public class LogActivity extends AppCompatActivity implements View.OnClickListen
 
 
     public static final String EXTRA_LAUNCH_SCRIPT = "launch_script";
+    private AssetsProjectLauncher mAssetsProjectLauncher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,23 +45,26 @@ public class LogActivity extends AppCompatActivity implements View.OnClickListen
         if (!getIntent().getBooleanExtra(EXTRA_LAUNCH_SCRIPT, false)) {
             return;
         }
-        if (GlobalProjectLauncher.getInstance().isRunning()) {
+        if (mAssetsProjectLauncher != null && mAssetsProjectLauncher.isRunning()) {
             Toast.makeText(this, "有任务正在运行,请稍后再试", Toast.LENGTH_LONG).show();
             return;
         }
         int id = v.getId();
         if (id == R.id.btn_start_qktx) {
-            GlobalProjectLauncher.getInstance().launch(LogActivity.this);
-            return;
+            mAssetsProjectLauncher = new AssetsProjectLauncher("project_qktx", GlobalAppContext.get());
+//            GlobalProjectLauncher.getInstance().launch(LogActivity.this);
         }
 
         if (id == R.id.btn_start_jkd) {
-            GlobalProjectLauncher.getInstance().launch(LogActivity.this);
-            return;
+            mAssetsProjectLauncher = new AssetsProjectLauncher("project_jkd", GlobalAppContext.get());
+//            GlobalProjectLauncher.getInstance().launch(LogActivity.this);
         }
         if (id == R.id.btn_start_mytt) {
-            GlobalProjectLauncher.getInstance().launch(LogActivity.this);
+            mAssetsProjectLauncher = new AssetsProjectLauncher("project_mytt", GlobalAppContext.get());
+//            GlobalProjectLauncher.getInstance().launch(LogActivity.this);
         }
+        mAssetsProjectLauncher.launch(LogActivity.this);
+
     }
 
 //    @Override

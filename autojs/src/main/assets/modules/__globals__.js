@@ -146,4 +146,18 @@ module.exports = function(runtime, global){
         return taskResponse.getData().get(0);
     }
 
+
+    global.waitForActivityWithTimeOut = function(activity, timeout, period) {
+        period = period || 200;
+        var time = new Date().getTime();
+        while (global.currentActivity() != activity) {
+            android.util.Log.e("aaa","waitForActivityWithTimeOut:\ncurrent-->"+global.currentActivity()+"\nwait----->"+activity);
+            if (timeout && new Date().getTime() - time >= timeout) {
+                return false;
+            };
+            sleep(period);
+        };
+        return true;
+    };
+
 }

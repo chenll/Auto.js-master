@@ -41,15 +41,15 @@
 
     <ImageView
         android:id="@+id/move_cursor"
-        android:layout_width="25dp"
-        android:layout_height="25dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_gravity="top|left"
-        android:background="@drawable/circle_cool_black"
+        android:background="@android:color/transparent"
         android:padding="5dp"
         android:scaleType="fitXY"
-        android:src="@drawable/ic_move_cursor"
         android:tint="@android:color/white"
         android:visibility="gone"
         tools:visibility="visible"/>
 
 </FrameLayout>
+    <!--android:src="@drawable/ic_move_cursor"-->

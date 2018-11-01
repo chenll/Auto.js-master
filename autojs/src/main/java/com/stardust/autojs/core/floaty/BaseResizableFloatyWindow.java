@@ -89,8 +89,8 @@ public class BaseResizableFloatyWindow extends ResizableFloatyWindow {
             mCloseButton.setVisibility(View.GONE);
         } else {
             mMoveCursor.setVisibility(View.VISIBLE);
-            mResizer.setVisibility(View.VISIBLE);
-            mCloseButton.setVisibility(View.VISIBLE);
+            mResizer.setVisibility(View.GONE);
+            mCloseButton.setVisibility(View.GONE);
         }
     }
 
@@ -144,6 +144,8 @@ public class BaseResizableFloatyWindow extends ResizableFloatyWindow {
 
         if (this.mMoveCursor != null) {
             DragGesture gesture = new DragGesture(this.mWindowBridge, this.mMoveCursor);
+            gesture.setKeepToSide(true);
+            gesture.keepToSide();
             gesture.setPressedAlpha(1.0F);
         }
     }

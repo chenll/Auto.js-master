@@ -4,12 +4,13 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.stardust.app.GlobalAppContext;
 import com.stardust.auojs.inrt.autojs.AutoJs;
 import com.stardust.auojs.inrt.launch.AssetsProjectLauncher;
-import com.stardust.auojs.inrt.launch.GlobalProjectLauncher;
 import com.stardust.autojs.core.console.ConsoleView;
 import com.stardust.autojs.core.console.StardustConsole;
 
@@ -60,7 +61,8 @@ public class LogActivity extends AppCompatActivity implements View.OnClickListen
 //            GlobalProjectLauncher.getInstance().launch(LogActivity.this);
         }
         if (id == R.id.btn_start_mytt) {
-            mAssetsProjectLauncher = new AssetsProjectLauncher("project_mytt", GlobalAppContext.get());
+//            mAssetsProjectLauncher = new AssetsProjectLauncher("project_mytt", GlobalAppContext.get());
+            mAssetsProjectLauncher = new AssetsProjectLauncher("project_jryk", GlobalAppContext.get());
 //            GlobalProjectLauncher.getInstance().launch(LogActivity.this);
         }
         mAssetsProjectLauncher.launch(LogActivity.this);

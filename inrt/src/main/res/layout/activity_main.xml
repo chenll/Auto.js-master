@@ -25,20 +25,28 @@
         android:id="@+id/btn_start_qktx"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="趣看天下" />
+        android:text="趣看天下"/>
 
     <Button
         android:id="@+id/btn_start_jkd"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="聚看点" />
+        android:text="聚看点"/>
+
     <Button
         android:id="@+id/btn_start_mytt"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="蚂蚁头条" />
+        android:text="蚂蚁头条"/>
+    <!--android:id="@+id/btn_start_jryk"-->
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="今日要看"/>
+
     <com.stardust.autojs.core.console.ConsoleView
         android:id="@+id/console"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"/>
 </LinearLayout>

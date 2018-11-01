@@ -1,37 +1,19 @@
-"auto"
 auto();
 toast("[聚看点]脚本开始运行");
 var pName = "com.xiangzi.jukandian";
 var atyMain = "com.xiangzi.jukandian.activity.MainActivity";
 var atyWeb = "com.xiangzi.jukandian.activity.WebViewActivity";
-var r = http.get("http://api.u9er.com/appData.ashx?ApiVersion=2.2.7");
-if (r == null || r.statusCode != 200) {
-    toast("数据初始失败,请检查网络,稍后再试...");
-    exit();
-}
 
-var taskbeanresulr = com.stardust.GsonParse.parse(r.body.string());
-if (taskbeanresulr == null || taskbeanresulr.getData() == null || taskbeanresulr.getData().isEmpty()) {
-    toast("数据解析失败,稍后再试...");
-    exit();
-}
-
-var task = taskbeanresulr.getData().get(0);
+var task = getRunningTask();
 //打开app
 if (!app.launchApp("聚看点")) {
     toast("[聚看点]打开失败,请检查你是否安装");
     exit();
 }
 
-
-
 waitForActivity(atyMain, [period = 200]);
-
 closeHomeDialog();
-
-
 var viewpager = id("com.xiangzi.jukandian:id/view_pager").findOne().bounds();
-
 var index = 0;
 for (var i = 0; i < task.getTotalNumber(); i++) {
     executeTask();

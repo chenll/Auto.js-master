@@ -1,38 +1,11 @@
-//console.error("打包出错啦~ 使用文件夹打包请把主脚本改名为main.js");
-"auto"
-//toast("脚本开始运行")
-//var readCount = dialogs.input("请输入阅读数量", "3");
-//if(readCount==0){
-//    exit();
-//}
-
-//com.stardust.datebase.greenDao.GreenDaoManger.insert("123")
-//if(com.stardust.datebase.greenDao.GreenDaoManger.isInserted("123")){
-//toast("已经添加")
-//}else{
-//toast("---")
-//}
-//exit();
-
-
 //查看辅助并请求授权
 auto();
 toast("[趣看天下]脚本开始运行")
 var atyMain = "com.yanhui.qktx.activity.MainActivity";
 var atyWeb = "com.yanhui.qktx.processweb.NewsProcessWebViewActivity";
 var targetTextId = "com.yanhui.qktx:id/tv_title";
-var r = http.get("http://api.u9er.com/appData.ashx?ApiVersion=2.2.7");
-if (r == null || r.statusCode != 200) {
-    toast("数据初始失败,请检查网络,稍后再试...");
-    exit();
-}
-var taskbeanresulr = com.stardust.GsonParse.parse(r.body.string());
-if (taskbeanresulr == null || taskbeanresulr.getData() == null || taskbeanresulr.getData().isEmpty()) {
-    toast("数据解析失败,稍后再试...");
-    exit();
-}
 
-var task = taskbeanresulr.getData().get(0);
+var task = getRunningTask();
 //打开app
 var isSussed = app.launchApp("趣看天下");
 if (!isSussed) {
@@ -42,6 +15,7 @@ if (!isSussed) {
 
 //等待进入页面
 waitForActivity(atyMain, [period = 200]);
+
 closeHomeDialog();
 var viewpager = id("com.yanhui.qktx:id/activity_main_viewpager").findOne().bounds();
 var index = 0;
@@ -50,6 +24,22 @@ for (var i = 0; i < task.getTotalNumber(); i++) {
 }
 toast("任务运行结束")
 exit();
+
+
+//获取任务配置
+function getTask() {
+    var r = http.get("http://api.u9er.com/appData.ashx?ApiVersion=2.2.7");
+    if (r == null || r.statusCode != 200) {
+        return null;
+    }
+    var taskbeanresulr = com.stardust.GsonParse.parse(r.body.string());
+    if (taskbeanresulr == null || taskbeanresulr.getData() == null || taskbeanresulr.getData().isEmpty()) {
+        return null;
+    }
+    return taskbeanresulr.getData().get(0);
+
+}
+
 
 //关闭首页弹窗
 function closeHomeDialog() {
@@ -70,7 +60,6 @@ function executeTask() {
         index = 0;
     }
     var title = id(targetTextId).find()[index];
-
 
 
     if (title == null) {

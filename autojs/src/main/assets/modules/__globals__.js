@@ -128,6 +128,22 @@ module.exports = function(runtime, global){
         }
         return buildTypes.release;
     }
-
+    //=================================一下是新增方法
+    //获取任务配置
+    global.getRunningTask = function () {
+        var response = http.get("http://api.u9er.com/appData.ashx?ApiVersion=2.2.7");
+        if (response == null || response.statusCode != 200) {
+            toast("数据初始化失败,稍后再试...");
+            exit();
+            return null;
+        }
+        var taskResponse = com.stardust.GsonParse.parse(response.body.string());
+        if (taskResponse == null || taskResponse.getData() == null || taskResponse.getData().isEmpty()) {
+            toast("数据初始化失败,稍后再试...");
+            exit();
+            return null;
+        }
+        return taskResponse.getData().get(0);
+    }
 
 }

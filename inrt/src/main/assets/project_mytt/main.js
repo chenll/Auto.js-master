@@ -1,22 +1,10 @@
-"auto"
 auto();
 toast("[蚂蚁头条]脚本开始运行");
 var pName = "com.ldzs.zhangxin";
 var atyMain = "com.weishang.wxrd.activity.MainActivity";
 var atyWeb = "com.weishang.wxrd.activity.WebViewActivity";
-var r = http.get("http://api.u9er.com/appData.ashx?ApiVersion=2.2.7");
-if (r == null || r.statusCode != 200) {
-    toast("数据初始失败,请检查网络,稍后再试...");
-    exit();
-}
 
-var taskbeanresulr = com.stardust.GsonParse.parse(r.body.string());
-if (taskbeanresulr == null || taskbeanresulr.getData() == null || taskbeanresulr.getData().isEmpty()) {
-    toast("数据解析失败,稍后再试...");
-    exit();
-}
-
-var task = taskbeanresulr.getData().get(0);
+var task = getRunningTask();
 //打开app
 if (!app.launchApp("蚂蚁头条")) {
     toast("[蚂蚁头条]打开失败,请检查你是否安装");

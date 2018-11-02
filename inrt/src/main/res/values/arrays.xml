@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="apps">
+        <item>qktx</item>
+        <item>jkd</item>
+        <item>mytt</item>
+        <item>jryk</item>
+    </string-array>
+
+    <string-array name="qktx">
+        <item>趣看天下</item>
+        <item>com.yanhui.qktx</item>
+        <item>3</item>
+    </string-array>
+    <string-array name="jkd">
+        <item>聚看点</item>
+        <item>com.xiangzi.jukandian</item>
+        <item>3</item>
+    </string-array>
+    <string-array name="mytt">
+        <item>蚂蚁头条</item>
+        <item>com.ldzs.zhangxin</item>
+        <item>3</item>
+    </string-array>
+    <string-array name="jryk">
+        <item>今日要看</item>
+        <item>com.sogou.todayread</item>
+        <item>3</item>
+    </string-array>
+
+</resources>

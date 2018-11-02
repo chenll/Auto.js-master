@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 
+import com.stardust.auojs.inrt.AppSelectActivity;
 import com.stardust.auojs.inrt.BuildConfig;
 import com.stardust.auojs.inrt.LogActivity;
 import com.stardust.auojs.inrt.Pref;
@@ -55,7 +56,7 @@ public class AssetsProjectLauncher {
             } else {
                 //否则显示日志界面并在日志界面中运行脚本
                 mHandler.post(() -> {
-                    activity.startActivity(new Intent(mActivity, LogActivity.class)
+                    activity.startActivity(new Intent(mActivity, AppSelectActivity.class)
                             .putExtra(LogActivity.EXTRA_LAUNCH_SCRIPT, true));
                     activity.finish();
                 });

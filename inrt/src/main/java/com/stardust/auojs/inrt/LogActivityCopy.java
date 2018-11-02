@@ -4,39 +4,35 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.stardust.app.GlobalAppContext;
 import com.stardust.auojs.inrt.autojs.AutoJs;
-import com.stardust.auojs.inrt.bean.AppBean;
 import com.stardust.auojs.inrt.launch.AssetsProjectLauncher;
 import com.stardust.autojs.core.console.ConsoleView;
 import com.stardust.autojs.core.console.StardustConsole;
 
 
-public class LogActivity extends AppCompatActivity implements View.OnClickListener {
+public class LogActivityCopy extends AppCompatActivity implements View.OnClickListener {
 
 
     public static final String EXTRA_LAUNCH_SCRIPT = "launch_script";
     private AssetsProjectLauncher mAssetsProjectLauncher;
 
-    private AppBean mAppBean;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mAppBean = getIntent().getExtras().getParcelable("appbean");
         setupView();
+        findViewById(R.id.btn_start_qktx).setOnClickListener(this);
+        findViewById(R.id.btn_start_jkd).setOnClickListener(this);
+        findViewById(R.id.btn_start_mytt).setOnClickListener(this);
 
-        new AssetsProjectLauncher("project_" + mAppBean.getLable(), GlobalAppContext.get()).launch(LogActivity.this);
     }
 
     private void setupView() {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle(mAppBean.getAppName());
+        toolbar.setTitle("自动运行");
         setSupportActionBar(toolbar);
         ConsoleView consoleView = (ConsoleView) findViewById(R.id.console);
         consoleView.setConsole((StardustConsole) AutoJs.getInstance().getGlobalConsole());
@@ -67,8 +63,19 @@ public class LogActivity extends AppCompatActivity implements View.OnClickListen
             mAssetsProjectLauncher = new AssetsProjectLauncher("project_jryk", GlobalAppContext.get());
 //            GlobalProjectLauncher.getInstance().launch(LogActivity.this);
         }
-        mAssetsProjectLauncher.launch(LogActivity.this);
+        mAssetsProjectLauncher.launch(LogActivityCopy.this);
 
     }
 
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        startActivity(new Intent(this, SettingsActivity.class));
+//        return true;
+//    }
+//
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        getMenuInflater().inflate(R.menu.menu_main, menu);
+//        return true;
+//    }
 }

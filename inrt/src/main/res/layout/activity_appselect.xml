@@ -6,8 +6,6 @@
     android:background="@android:color/white"
     android:fitsSystemWindows="true"
     android:orientation="vertical">
-
-
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -20,9 +18,8 @@
             app:popupTheme="@style/AppTheme.PopupOverlay" />
 
     </android.support.design.widget.AppBarLayout>
-
-    <com.stardust.autojs.core.console.ConsoleView
-        android:id="@+id/console"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_apps"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="wrap_content" />
 </LinearLayout>

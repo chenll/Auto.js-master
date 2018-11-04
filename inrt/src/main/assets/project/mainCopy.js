@@ -34,7 +34,7 @@ android.util.Log.e("aaa", "----------------------------------");
 
 
 toast("[" + appName + "]脚本开始运行");
-var task = com.stardust.auojs.inrt.AppAutoMgr.getCurrentTask();
+var task = getRunningTask();
 //打开app
 if (!app.launchApp(appName)) {
     toast("[" + appName + "]打开失败,请检查你是否安装");
@@ -45,7 +45,6 @@ if (!app.launchApp(appName)) {
 
 var time = new Date().getTime();
 while (global.currentActivity() != atyMain && global.currentActivity() != atyDisturb) {
-    click("允许");
     closeDialog();
     if (new Date().getTime() - time >= 2000) {
         click("跳过");

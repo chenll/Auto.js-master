@@ -4,8 +4,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.stardust.app.GlobalAppContext;
@@ -30,7 +28,10 @@ public class LogActivity extends AppCompatActivity implements View.OnClickListen
         mAppBean = getIntent().getExtras().getParcelable("appbean");
         setupView();
 
-        new AssetsProjectLauncher("project_" + mAppBean.getLable(), GlobalAppContext.get()).launch(LogActivity.this);
+        AppAutoMgr.CURRENTPACKAGENAME = mAppBean.getAppPackageName();
+
+//        new AssetsProjectLauncher("project_" + mAppBean.getLable(), GlobalAppContext.get()).launch(LogActivity.this);
+        new AssetsProjectLauncher("project", GlobalAppContext.get()).launch(LogActivity.this);
     }
 
     private void setupView() {

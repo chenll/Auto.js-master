@@ -4,34 +4,17 @@ var window = floaty.window(
 );
 window.setPosition(device.width - com.stardust.DensityUtil.dp2px(context, 40), device.height / 2 - com.stardust.DensityUtil.dp2px(context, 40));
 window.setAdjustEnabled(true);
-var appAutoMessage = com.stardust.auojs.inrt.AppAutoMgr.getCurrentAppAutoMessage();
-if (appAutoMessage == null) {
-    toast("获取本地配置异常")
-    exit();
-}
-
-var appName = appAutoMessage.getAppName();
-var pName = appAutoMessage.getPackageName();
+var appName = "中青看点";
+var pName = "com.youth.news";
 //主页面
-var atyMain = appAutoMessage.getActivityMain();
+var atyMain = "com.weishang.wxrd.activity.MainActivity";
 //可能干扰主页面的activity
-var atyDisturb = appAutoMessage.getActivityDisturb();
+var atyDisturb = "com.weishang.wxrd.ui.RedPacketFirstActivity";
 //列表标题id
-var targetTextId = appAutoMessage.getTargetTextId();
+var targetTextId = "cn.youth.news:id/tv_article_title";
 //首页上下滚动view的id
-var rollViewId = appAutoMessage.getRollViewId();
-var dialogIds = appAutoMessage.getDialogIds();
-var exitBtnId = appAutoMessage.getExitBtnId();
-
-android.util.Log.e("aaa", "-----------------" + appName + "-----------------");
-android.util.Log.e("aaa", pName);
-android.util.Log.e("aaa", atyMain);
-android.util.Log.e("aaa", atyDisturb);
-android.util.Log.e("aaa", targetTextId);
-android.util.Log.e("aaa", rollViewId);
-android.util.Log.e("aaa", dialogIds);
-android.util.Log.e("aaa", "----------------------------------");
-
+var rollViewId = "cn.youth.news:id/pull_list_view";
+var dialogIds = new Array("cn.youth.news:id/tv_pass", "android:id/button2", "cn.youth.news:id/iv_close", "cn.youth.news:id/btn_close");
 
 toast("[" + appName + "]脚本开始运行");
 var task = getRunningTask();
@@ -57,7 +40,6 @@ while (global.currentActivity() != atyMain && global.currentActivity() != atyDis
 
 if (getListView() == null) {
     toast("任务运行异常1001")
-    exitApp();
     exit();
 }
 
@@ -72,63 +54,35 @@ for (var i = 0; i < task.getTotalNumber();) {
             }
         }
     }
-    if (!swipe(300, (device.height) * 4 / 5, 300, (device.height) / 4, task.getSlidingSpeed()) || getListView() == null) {
-        back();
+    if (!swipe(300, (device.height) * 4 / 5, 300, (device.height) / 4, task.getSlidingSpeed())||getListView() == null) {
+         back();
     }
 }
-exitApp();
 toast("任务运行结束")
 exit();
 
 
 
 function getListView() {
-    //className("android.widget.ListView")
+//className("android.widget.ListView")
     closeDialog();
-    var listViewTemp = id(rollViewId).findOne(1000);
+    var listViewTemp = id(rollViewId).findOnce();
     if (listViewTemp == null) {
+        sleep(1000);
         closeDialog();
     }
-    listViewTemp = id(rollViewId).findOne(1000);
+    listViewTemp = id(rollViewId).findOne(5000);
     if (listViewTemp == null) {
         back();
-    }else{
-    return listViewTemp;
     }
-
-    listViewTemp = id(rollViewId).findOne(1000);
-    if (listViewTemp == null) {
-        closeDialog();
-    }else{
-         return listViewTemp;
-         }
-    listViewTemp = id(rollViewId).findOne(1000);
-    if (listViewTemp == null) {
-        back();
-    }else{
-         return listViewTemp;
-         }
-
-    listViewTemp = id(rollViewId).findOne(1000);
-    if (listViewTemp == null) {
-        closeDialog();
-    }else{
-         return listViewTemp;
-         }
-    listViewTemp = id(rollViewId).findOne(1000);
-    if (listViewTemp == null) {
-        back();
-    }else{
-         return listViewTemp;
-         }
-
-    listViewTemp = id(rollViewId).findOne(3000);
+    listViewTemp = id(rollViewId).findOne(5000);
     closeDialog();
     return listViewTemp;
 }
 
 //关闭首页弹窗
 function closeDialog() {
+
     for (var i = 0; i < dialogIds.length; i++) {
         closeDialogByid(dialogIds[i]);
     }
@@ -144,6 +98,7 @@ function closeDialogByid(viewId) {
     var imgClose = id(viewId).findOnce();
     if (imgClose != null) {
         sleep(1000);
+
         imgClose.click();
         sleep(1000);
     }
@@ -154,26 +109,20 @@ function closeDialogByid(viewId) {
 function executeTask(textView) {
     sleep(1000);
     if (getListView() == null) {
-        exitApp();
         toast("任务运行异常1002")
         exit();
     }
 
     var parent = textView.parent();
-
-    if(parent==null){
-    return false;
-    }
-
     //跳过广告
     var guangg = parent.findByText("广告");
     if (guangg != null && guangg.size() != 0) {
-        //        toast("发现广告，直接跳过");
+        toast("发现广告，直接跳过");
         return false;
     }
     var titleStr = textView.text();
     if (com.stardust.datebase.greenDao.GreenDaoManger.isInserted(titleStr)) {
-        //        toast("已经点过了，直接跳过");
+        toast("已经点过了，直接跳过");
         return false;
     }
     if (click(titleStr)) {
@@ -194,22 +143,4 @@ function executeTask(textView) {
     }
     return false;
 
-}
-
-function exitApp() {
-
-    if (exitBtnId == null || exitBtnId == "") {
-        back();
-        sleep(300);
-        back
-    } else {
-        back();
-        android.util.Log.e("aaa", exitBtnId);
-        var btnEixt = id(exitBtnId).findOne(1000);
-        if (btnEixt != null) {
-            btnEixt.click();
-        }else{
-            back();
-        }
-    }
 }

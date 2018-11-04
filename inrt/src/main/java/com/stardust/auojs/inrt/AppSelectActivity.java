@@ -7,8 +7,13 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 
+import com.stardust.Event.ScriptEvent;
 import com.stardust.auojs.inrt.adapter.AppSelectAdapter;
 import com.stardust.auojs.inrt.bean.AppBean;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,10 +24,16 @@ public class AppSelectActivity extends AppCompatActivity {
     private AppSelectAdapter mAppSelectAdapter;
     private List<AppBean> mAppBeans;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_appselect);
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this);
+
+        }
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("App列表");
         setSupportActionBar(toolbar);
@@ -61,11 +72,24 @@ public class AppSelectActivity extends AppCompatActivity {
             appBean.setLable(appLable);
             appBean.setAppName(appitem[0]);
             appBean.setAppPackageName(appitem[1]);
+            appBean.setAppVersionName(appitem[2]);
+            appBean.setAppVersion(appitem[3]);
             mAppBeans.add(appBean);
         }
 
 
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onScriptEvent(ScriptEvent event) {
+    }
 
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().unregister(this);
+        }
+    }
 }

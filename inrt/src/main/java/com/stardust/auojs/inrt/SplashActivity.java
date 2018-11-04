@@ -1,23 +1,20 @@
 package com.stardust.auojs.inrt;
 
 import android.Manifest;
-import android.content.Intent;
-import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.TextView;
 
-import com.stardust.auojs.inrt.launch.AssetsProjectLauncher;
 import com.stardust.auojs.inrt.launch.GlobalProjectLauncher;
+import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import io.reactivex.disposables.Disposable;
 
 import static android.content.pm.PackageManager.PERMISSION_DENIED;
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
@@ -33,14 +30,29 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (!Pref.isFirstUsing()) {
-            main();
-            return;
-        }
         setContentView(R.layout.activity_splash);
-        TextView slug = (TextView) findViewById(R.id.slug);
-        slug.setTypeface(Typeface.createFromAsset(getAssets(), "roboto_medium.ttf"));
-        new Handler().postDelayed(this::main, 2500);
+        RxPermissions rxPermission = new RxPermissions(SplashActivity.this);
+        Disposable disposable = rxPermission.request(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE)
+                .subscribe(granted -> {
+                    if (granted) {
+                        // All requested permissions are granted
+                        runScript();
+                    } else {
+                        // At least one permission is denied
+                        SplashActivity.this.finish();
+
+                    }
+                });
+
+//
+//        if (!Pref.isFirstUsing()) {
+//            main();
+//            return;
+//        }
+//        setContentView(R.layout.activity_splash);
+//        TextView slug = (TextView) findViewById(R.id.slug);
+//        slug.setTypeface(Typeface.createFromAsset(getAssets(), "roboto_medium.ttf"));
+//        new Handler().postDelayed(this::main, 2500);
     }
 
     private void main() {
@@ -52,10 +64,10 @@ public class SplashActivity extends AppCompatActivity {
         new Thread(() -> GlobalProjectLauncher.getInstance().launch(this)).start();
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        runScript();
-    }
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+//        runScript();
+//    }
 
     protected void checkPermission(String... permissions) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

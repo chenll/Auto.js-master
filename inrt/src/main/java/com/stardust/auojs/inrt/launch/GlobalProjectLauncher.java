@@ -19,6 +19,6 @@ public class GlobalProjectLauncher extends AssetsProjectLauncher {
     }
 
     GlobalProjectLauncher(Context context) {
-        super("project_jkd", context);
+        super("project", context);
     }
 }

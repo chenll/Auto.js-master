@@ -10,6 +10,7 @@ import com.stardust.app.GlobalAppContext;
 import com.stardust.auojs.inrt.autojs.AutoJs;
 import com.stardust.auojs.inrt.bean.AppBean;
 import com.stardust.auojs.inrt.launch.AssetsProjectLauncher;
+import com.stardust.auojs.inrt.launch.GlobalProjectLauncher;
 import com.stardust.autojs.core.console.ConsoleView;
 import com.stardust.autojs.core.console.StardustConsole;
 
@@ -30,8 +31,9 @@ public class LogActivity extends AppCompatActivity implements View.OnClickListen
 
         AppAutoMgr.CURRENTPACKAGENAME = mAppBean.getAppPackageName();
 
+        GlobalProjectLauncher.getInstance().launch(LogActivity.this);
 //        new AssetsProjectLauncher("project_" + mAppBean.getLable(), GlobalAppContext.get()).launch(LogActivity.this);
-        new AssetsProjectLauncher("project", GlobalAppContext.get()).launch(LogActivity.this);
+//        new AssetsProjectLauncher("project", GlobalAppContext.get()).launch(LogActivity.this);
     }
 
     private void setupView() {

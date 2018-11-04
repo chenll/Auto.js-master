@@ -51,7 +51,7 @@ public class AssetsProjectLauncher {
         } else {
             //如果不隐藏日志界面
             //如果当前已经是日志界面则直接运行脚本
-            if (activity instanceof LogActivity) {
+            if (activity instanceof AppSelectActivity) {
                 runScript();
             } else {
                 //否则显示日志界面并在日志界面中运行脚本

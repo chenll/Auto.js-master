@@ -205,8 +205,8 @@ function exitApp() {
 
     if (exitBtnId == null || exitBtnId == "") {
         back();
-        sleep(300);
-        back
+        sleep(500);
+        back();
     } else {
         back();
         android.util.Log.e("aaa", exitBtnId);
@@ -214,6 +214,7 @@ function exitApp() {
         if (btnEixt != null) {
             btnEixt.click();
         } else {
+            sleep(500);
             back();
         }
     }

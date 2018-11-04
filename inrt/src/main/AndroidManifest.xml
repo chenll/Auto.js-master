@@ -30,7 +30,8 @@
         <activity android:name=".LogActivity">
 
         </activity>
-        <activity android:name=".AppSelectActivity"/>
+        <activity android:name=".AppSelectActivity"
+            android:theme="@style/aty_qmui"/>
 
         <activity
             android:name=".SplashActivity"

@@ -25,7 +25,9 @@ public class HistoryDao extends AbstractDao<History, Long> {
      */
     public static class Properties {
         public final static Property Id = new Property(0, Long.class, "id", true, "_id");
-        public final static Property Name = new Property(1, String.class, "name", false, "NAME");
+        public final static Property PackageName = new Property(1, String.class, "packageName", false, "PACKAGE_NAME");
+        public final static Property Key = new Property(2, String.class, "key", false, "KEY");
+        public final static Property Time = new Property(3, long.class, "time", false, "TIME");
     }
 
 
@@ -42,7 +44,9 @@ public class HistoryDao extends AbstractDao<History, Long> {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "\"HISTORY\" (" + //
                 "\"_id\" INTEGER PRIMARY KEY AUTOINCREMENT ," + // 0: id
-                "\"NAME\" TEXT);"); // 1: name
+                "\"PACKAGE_NAME\" TEXT," + // 1: packageName
+                "\"KEY\" TEXT," + // 2: key
+                "\"TIME\" INTEGER NOT NULL );"); // 3: time
     }
 
     /** Drops the underlying database table. */
@@ -60,10 +64,16 @@ public class HistoryDao extends AbstractDao<History, Long> {
             stmt.bindLong(1, id);
         }
  
-        String name = entity.getName();
-        if (name != null) {
-            stmt.bindString(2, name);
+        String packageName = entity.getPackageName();
+        if (packageName != null) {
+            stmt.bindString(2, packageName);
         }
+ 
+        String key = entity.getKey();
+        if (key != null) {
+            stmt.bindString(3, key);
+        }
+        stmt.bindLong(4, entity.getTime());
     }
 
     @Override
@@ -75,10 +85,16 @@ public class HistoryDao extends AbstractDao<History, Long> {
             stmt.bindLong(1, id);
         }
  
-        String name = entity.getName();
-        if (name != null) {
-            stmt.bindString(2, name);
+        String packageName = entity.getPackageName();
+        if (packageName != null) {
+            stmt.bindString(2, packageName);
         }
+ 
+        String key = entity.getKey();
+        if (key != null) {
+            stmt.bindString(3, key);
+        }
+        stmt.bindLong(4, entity.getTime());
     }
 
     @Override
@@ -90,7 +106,9 @@ public class HistoryDao extends AbstractDao<History, Long> {
     public History readEntity(Cursor cursor, int offset) {
         History entity = new History( //
             cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
-            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1) // name
+            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // packageName
+            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // key
+            cursor.getLong(offset + 3) // time
         );
         return entity;
     }
@@ -98,7 +116,9 @@ public class HistoryDao extends AbstractDao<History, Long> {
     @Override
     public void readEntity(Cursor cursor, History entity, int offset) {
         entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
-        entity.setName(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
+        entity.setPackageName(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
+        entity.setKey(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
+        entity.setTime(cursor.getLong(offset + 3));
      }
     
     @Override

@@ -172,12 +172,12 @@ function executeTask(textView) {
         return false;
     }
     var titleStr = textView.text();
-    if (com.stardust.datebase.greenDao.GreenDaoManger.isInserted(titleStr)) {
+    if (com.stardust.datebase.greenDao.GreenDaoManger.isInserted(pName,titleStr)) {
         //        toast("已经点过了，直接跳过");
         return false;
     }
     if (click(titleStr)) {
-        com.stardust.datebase.greenDao.GreenDaoManger.insert(titleStr);
+        com.stardust.datebase.greenDao.GreenDaoManger.insert(pName,titleStr);
         for (var i = 0; i < task.getSingleSlideTimes(); i++) {
             sleep(1000);
             closeDialog();

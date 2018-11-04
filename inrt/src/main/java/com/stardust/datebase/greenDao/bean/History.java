@@ -8,11 +8,15 @@ import org.greenrobot.greendao.annotation.Generated;
 public class History {
     @Id(autoincrement = true)
     private Long id;
-    private String name;
-    @Generated(hash = 1612502674)
-    public History(Long id, String name) {
+    private String packageName;
+    private String key;
+    private long time;
+    @Generated(hash = 1871685353)
+    public History(Long id, String packageName, String key, long time) {
         this.id = id;
-        this.name = name;
+        this.packageName = packageName;
+        this.key = key;
+        this.time = time;
     }
     @Generated(hash = 869423138)
     public History() {
@@ -23,10 +27,23 @@ public class History {
     public void setId(Long id) {
         this.id = id;
     }
-    public String getName() {
-        return this.name;
+    public String getPackageName() {
+        return this.packageName;
     }
-    public void setName(String name) {
-        this.name = name;
+    public void setPackageName(String packageName) {
+        this.packageName = packageName;
     }
+    public String getKey() {
+        return this.key;
+    }
+    public void setKey(String key) {
+        this.key = key;
+    }
+    public long getTime() {
+        return this.time;
+    }
+    public void setTime(long time) {
+        this.time = time;
+    }
+  
 }

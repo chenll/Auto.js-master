@@ -23,7 +23,7 @@
         android:name=".App"
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
-        android:label="inrt"
+        android:label="松鼠聚合"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="android:label, android:allowBackup">

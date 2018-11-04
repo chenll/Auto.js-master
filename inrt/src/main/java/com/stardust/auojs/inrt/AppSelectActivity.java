@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 
 import com.stardust.Event.ScriptEvent;
 import com.stardust.auojs.inrt.adapter.AppSelectAdapter;
@@ -82,6 +83,8 @@ public class AppSelectActivity extends AppCompatActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onScriptEvent(ScriptEvent event) {
+
+        Log.e("aaa","");
     }
 
 

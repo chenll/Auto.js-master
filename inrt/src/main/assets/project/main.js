@@ -61,17 +61,22 @@ if (getListView() == null) {
     exit();
 }
 
-var index = 0;
 for (var i = 0; i < task.getTotalNumber();) {
     var textViews = id(targetTextId).find();
-    for (var j = 0; j < textViews.length; j++) {
-        var textView = textViews[j];
-        if (textView != null && textView.parent() != null) {
-            if (executeTask(textViews[j])) {
-                i++;
+    if (textViews != null && textViews.length!=0) {
+        for (var j = 0; j < textViews.length; j++) {
+            var textView = textViews[j];
+            if (textView != null && textView.parent() != null) {
+                if (executeTask(textViews[j])) {
+                    i++;
+                }
+            }
+            if (i >= task.getTotalNumber()) {
+                break;
             }
         }
     }
+
     if (!swipe(300, (device.height) * 4 / 5, 300, (device.height) / 4, task.getSlidingSpeed()) || getListView() == null) {
         back();
     }
@@ -92,35 +97,35 @@ function getListView() {
     listViewTemp = id(rollViewId).findOne(1000);
     if (listViewTemp == null) {
         back();
-    }else{
-    return listViewTemp;
+    } else {
+        return listViewTemp;
     }
 
     listViewTemp = id(rollViewId).findOne(1000);
     if (listViewTemp == null) {
         closeDialog();
-    }else{
-         return listViewTemp;
-         }
+    } else {
+        return listViewTemp;
+    }
     listViewTemp = id(rollViewId).findOne(1000);
     if (listViewTemp == null) {
         back();
-    }else{
-         return listViewTemp;
-         }
+    } else {
+        return listViewTemp;
+    }
 
     listViewTemp = id(rollViewId).findOne(1000);
     if (listViewTemp == null) {
         closeDialog();
-    }else{
-         return listViewTemp;
-         }
+    } else {
+        return listViewTemp;
+    }
     listViewTemp = id(rollViewId).findOne(1000);
     if (listViewTemp == null) {
         back();
-    }else{
-         return listViewTemp;
-         }
+    } else {
+        return listViewTemp;
+    }
 
     listViewTemp = id(rollViewId).findOne(3000);
     closeDialog();
@@ -161,8 +166,8 @@ function executeTask(textView) {
 
     var parent = textView.parent();
 
-    if(parent==null){
-    return false;
+    if (parent == null) {
+        return false;
     }
 
     //跳过广告
@@ -172,12 +177,12 @@ function executeTask(textView) {
         return false;
     }
     var titleStr = textView.text();
-    if (com.stardust.datebase.greenDao.GreenDaoManger.isInserted(pName,titleStr)) {
+    if (com.stardust.datebase.greenDao.GreenDaoManger.isInserted(pName, titleStr)) {
         //        toast("已经点过了，直接跳过");
         return false;
     }
     if (click(titleStr)) {
-        com.stardust.datebase.greenDao.GreenDaoManger.insert(pName,titleStr);
+        com.stardust.datebase.greenDao.GreenDaoManger.insert(pName, titleStr);
         for (var i = 0; i < task.getSingleSlideTimes(); i++) {
             sleep(1000);
             closeDialog();
@@ -208,7 +213,7 @@ function exitApp() {
         var btnEixt = id(exitBtnId).findOne(1000);
         if (btnEixt != null) {
             btnEixt.click();
-        }else{
+        } else {
             back();
         }
     }

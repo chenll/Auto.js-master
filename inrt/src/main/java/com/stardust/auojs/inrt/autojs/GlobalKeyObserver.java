@@ -3,12 +3,15 @@ package com.stardust.auojs.inrt.autojs;
 import android.util.Log;
 import android.view.KeyEvent;
 
+import com.stardust.Event.VolumeUpEvent;
 import com.stardust.app.GlobalAppContext;
 import com.stardust.auojs.inrt.Pref;
 import com.stardust.autojs.core.inputevent.InputEventObserver;
 import com.stardust.autojs.core.inputevent.ShellKeyObserver;
 import com.stardust.view.accessibility.AccessibilityService;
 import com.stardust.view.accessibility.OnKeyListener;
+
+import org.greenrobot.eventbus.EventBus;
 
 /**
  * Created by Stardust on 2017/8/14.
@@ -37,6 +40,7 @@ public class GlobalKeyObserver implements OnKeyListener, ShellKeyObserver.KeyLis
     public void onVolumeUp() {
         Log.d(LOG_TAG, "onVolumeUp at " + System.currentTimeMillis());
         if (Pref.shouldStopAllScriptsWhenVolumeUp()) {
+            EventBus.getDefault().post(new VolumeUpEvent());
             AutoJs.getInstance().getScriptEngineService().stopAllAndToast();
         }
     }

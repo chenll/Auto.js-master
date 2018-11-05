@@ -1,14 +1,17 @@
 package com.stardust.auojs.inrt;
 
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -18,12 +21,15 @@ import com.google.gson.Gson;
 import com.qmuiteam.qmui.widget.dialog.QMUIDialog;
 import com.qmuiteam.qmui.widget.dialog.QMUITipDialog;
 import com.stardust.Event.ScriptEvent;
+import com.stardust.Event.VolumeUpEvent;
 import com.stardust.auojs.inrt.adapter.AppSelectAdapter;
+import com.stardust.auojs.inrt.adapter.RvLogAdapter;
 import com.stardust.auojs.inrt.bean.AppBean;
 import com.stardust.auojs.inrt.bean.NewTaskBean;
 import com.stardust.auojs.inrt.bean.NewTaskResponse;
 import com.stardust.auojs.inrt.launch.GlobalProjectLauncher;
 import com.stardust.autojs.core.http.MutableOkHttp;
+import com.stardust.autojs.runtime.api.AppUtils;
 import com.stardust.view.accessibility.AccessibilityService;
 
 import org.greenrobot.eventbus.EventBus;
@@ -49,6 +55,10 @@ public class AppSelectActivity extends AppCompatActivity {
     private RecyclerView mRecyclerView;
     private AppSelectAdapter mAppSelectAdapter;
     private List<AppBean> mAppBeans;
+    private RecyclerView mRvLog;
+    private RvLogAdapter mRvLogAdapter;
+    private List<String> mLogs;
+
     private QMUITipDialog tipDialog;
     private EditText mEtSign;
 
@@ -62,34 +72,24 @@ public class AppSelectActivity extends AppCompatActivity {
         if (!EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().register(this);
         }
-        mEtSign = (EditText) findViewById(R.id.et_sign);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle("App列表");
-        mRecyclerView = (RecyclerView) findViewById(R.id.rv_apps);
-        GridLayoutManager layoutManage = new GridLayoutManager(this, 2);
-        mRecyclerView.setLayoutManager(layoutManage);
-        //创建适配器
-        mAppBeans = new ArrayList<>();
-        initDatas();
-        mAppSelectAdapter = new AppSelectAdapter(R.layout.itme_app, mAppBeans);
-        //给RecyclerView设置适配器
-        mRecyclerView.setAdapter(mAppSelectAdapter);
+        initViews();
         mAppSelectAdapter.setOnItemClickListener((adapter, view, position) -> {
+            if (1 == 1) {
+                return;
+            }
             if (!checkAccessibility()) {
                 return;
             }
             if (!checkDrawOverlays()) {
                 return;
             }
-//            AppAutoMgr.CURRENTPACKAGENAME = mAppSelectAdapter.getItem(position).getAppPackageName();
-//            GlobalProjectLauncher.getInstance().launch(AppSelectActivity.this);
-//            Intent intent = new Intent(AppSelectActivity.this, LogActivity.class);
-//            Bundle b = new Bundle();
-//            b.putParcelable("appbean", mAppSelectAdapter.getItem(position));
-//            intent.putExtras(b);
-//            startActivity(intent);
-
-
+            AppAutoMgr.CURRENTPACKAGENAME = mAppSelectAdapter.getItem(position).getAppPackageName();
+            GlobalProjectLauncher.getInstance().launch(AppSelectActivity.this);
+            Intent intent = new Intent(AppSelectActivity.this, LogActivity.class);
+            Bundle b = new Bundle();
+            b.putParcelable("appbean", mAppSelectAdapter.getItem(position));
+            intent.putExtras(b);
+            startActivity(intent);
         });
         findViewById(R.id.btn_test).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -100,46 +100,67 @@ public class AppSelectActivity extends AppCompatActivity {
                 if (!checkDrawOverlays()) {
                     return;
                 }
-
-                if (mEtSign.getText() == null) {
+                if (mEtSign.getText() == null || TextUtils.isEmpty(mEtSign.getText())) {
                     Toast.makeText(AppSelectActivity.this, "请先输入您的密钥", Toast.LENGTH_LONG).show();
                     return;
                 }
+
+                queue.clear();
                 getTask(mEtSign.getText().toString());
-//                new QMUIDialog.MessageDialogBuilder(AppSelectActivity.this)
-//                        .setMessage("将依次执行【趣看天下】【蚂蚁头条】")
-//                        .addAction("确定", (dialog, index) -> {
-//
-//                            dialog.dismiss();
-//                        }).addAction("取消", (dialog, index) -> dialog.dismiss()).show();
             }
         });
 
 
-        tipDialog = new QMUITipDialog.Builder(AppSelectActivity.this)
-                .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
-                .setTipWord("正在加载数据，请稍等")
-                .create();
-
-
     }
 
+    private void initViews() {
+        mEtSign = (EditText) findViewById(R.id.et_sign);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle("App列表");
+
+
+        mRvLog = (RecyclerView) findViewById(R.id.rv_log);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        mRvLog.setLayoutManager(linearLayoutManager);
+        mLogs = new ArrayList<>();
+        mRvLogAdapter = new RvLogAdapter(R.layout.itme_log, mLogs);
+        mRvLog.setAdapter(mRvLogAdapter);
+
+
+        mRecyclerView = (RecyclerView) findViewById(R.id.rv_apps);
+        GridLayoutManager layoutManage = new GridLayoutManager(this, 2);
+        mRecyclerView.setLayoutManager(layoutManage);
+        mAppBeans = new ArrayList<>();
+        initDatas();
+        mAppSelectAdapter = new AppSelectAdapter(R.layout.itme_app, mAppBeans);
+        mRecyclerView.setAdapter(mAppSelectAdapter);
+
+
+        tipDialog = new QMUITipDialog.Builder(AppSelectActivity.this)
+                .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
+                .setTipWord("正在加载数据，请稍等...")
+                .create();
+    }
 
     private void getTask(String sign) {
         Observable.create((ObservableOnSubscribe<NewTaskResponse>) emitter -> {
             Request request = new Request.Builder().url("http://api.u9er.com/appData.ashx?sign=" + MD5Security.getMD5(sign)).build();
             Response response = new MutableOkHttp().client().newCall(request).execute();
             if (response == null || !response.isSuccessful() || response.body() == null) {
-                emitter.onError(new RuntimeException());
+                emitter.onError(new RuntimeException("任务获取失败,请检查网络后再试."));
                 return;
             }
             try {
                 Gson gson = new Gson();
                 NewTaskResponse taskBean = gson.fromJson(response.body().string(), NewTaskResponse.class);
-                if (taskBean != null && taskBean.getDatalist() != null && !taskBean.getDatalist().isEmpty()) {
-                    emitter.onNext(taskBean);
+                if (taskBean == null) {
+                    emitter.onError(new RuntimeException("任务获取失败,请稍后再试."));
+
+                } else if (taskBean.getDatalist() == null || taskBean.getDatalist().isEmpty()) {
+                    emitter.onError(new RuntimeException("暂无任务,请稍后再试"));
                 } else {
-                    emitter.onError(new RuntimeException());
+                    emitter.onNext(taskBean);
                 }
             } catch (Exception e) {
                 emitter.onError(e);
@@ -157,11 +178,24 @@ public class AppSelectActivity extends AppCompatActivity {
 
                     @Override
                     public void onNext(NewTaskResponse integer) {
+
+                        StringBuffer stringBuffer = new StringBuffer();
                         for (NewTaskBean newTaskBean : integer.getDatalist()) {
                             queue.offer(newTaskBean);
+                            stringBuffer.append(newTaskBean.getF_AppName());
+                            if (newTaskBean != integer.getDatalist().get(integer.getDatalist().size() - 1)) {
+                                stringBuffer.append("\n");
+
+                            }
                         }
-                        runTask();
-                        Toast.makeText(AppSelectActivity.this, "数据加载成功", Toast.LENGTH_LONG).show();
+
+                        new QMUIDialog.MessageDialogBuilder(AppSelectActivity.this).setTitle("任务列表").setMessage(stringBuffer.toString())
+                                .addAction("开始执行", (dialog, index) -> {
+                                    dialog.dismiss();
+                                    mLogs.clear();
+                                    mRvLogAdapter.notifyDataSetChanged();
+                                    runTask();
+                                }).addAction("取消", (dialog, index) -> dialog.dismiss()).show();
 
 
                     }
@@ -169,8 +203,7 @@ public class AppSelectActivity extends AppCompatActivity {
                     @Override
                     public void onError(Throwable e) {
                         tipDialog.dismiss();
-                        Toast.makeText(AppSelectActivity.this, "数据加载失败", Toast.LENGTH_LONG).show();
-
+                        Toast.makeText(AppSelectActivity.this, TextUtils.isEmpty(e.getMessage()) ? "任务获取失败" : e.getMessage(), Toast.LENGTH_LONG).show();
                     }
 
                     @Override
@@ -198,9 +231,26 @@ public class AppSelectActivity extends AppCompatActivity {
 
     }
 
+    private void addLog(String str) {
+        mLogs.add(str);
+        mRvLogAdapter.notifyDataSetChanged();
+    }
+
     private void runTask() {
         NewTaskBean newTaskBean = queue.poll();
         if (newTaskBean == null) {
+            addLog("任务全部执行结束");
+            return;
+        }
+        PackageInfo packageInfo = com.stardust.utils.AppUtils.getPackageInfo(AppSelectActivity.this, newTaskBean.getF_PackageName());
+        if (packageInfo == null) {
+            addLog("[" + newTaskBean.getF_AppName() + "]未安装");
+            runTask();
+            return;
+        }
+        if (!newTaskBean.getF_AppVersion().equals(packageInfo.versionName)) {
+            addLog("暂不支持[" + newTaskBean.getF_AppName() + "]" + packageInfo.versionName + "版本不对");
+            runTask();
             return;
         }
         AppAutoMgr.CURRENTPACKAGENAME = newTaskBean.getF_PackageName();
@@ -210,10 +260,16 @@ public class AppSelectActivity extends AppCompatActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onScriptEvent(ScriptEvent event) {
-
-//        Log.e("ddd",event.getScriptExecution()==null?"----":event.getScriptExecution()+"");
-
+        NewTaskBean taskBean = AppAutoMgr.sNewTaskBean;
+        if (taskBean != null) {
+            addLog("[" + taskBean.getF_AppName() + "]执行完成");
+        }
         runTask();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onVolumeUp(VolumeUpEvent event) {
+        queue.clear();
     }
 
 

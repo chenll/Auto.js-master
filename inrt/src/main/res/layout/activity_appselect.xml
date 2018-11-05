@@ -6,6 +6,7 @@
     android:background="@android:color/white"
     android:fitsSystemWindows="true"
     android:orientation="vertical">
+
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -22,23 +23,31 @@
     <EditText
         android:id="@+id/et_sign"
         android:layout_width="match_parent"
-        android:hint="请输入您的key"
+        android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
-        android:layout_height="wrap_content"/>
+        android:hint="请输入您的key" />
+
     <com.qmuiteam.qmui.widget.roundwidget.QMUIRoundButton
         android:id="@+id/btn_test"
-        android:text="批量执行测试"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:gravity="center"
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
-        android:gravity="center"
-        android:layout_margin="20dp"
+        android:text="批量执行测试" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_log"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_apps"
-        android:visibility="gone"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:visibility="gone" />
 </LinearLayout>

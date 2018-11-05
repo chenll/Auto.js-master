@@ -1,5 +1,7 @@
 package com.stardust.auojs.inrt.autojs;
 
+import android.util.Log;
+
 import com.stardust.Event.ScriptEvent;
 import com.stardust.app.GlobalAppContext;
 import com.stardust.auojs.inrt.R;
@@ -23,6 +25,9 @@ public class ScriptExecutionGlobalListener implements ScriptExecutionListener {
     @Override
     public void onSuccess(ScriptExecution execution, Object result) {
         onFinish(execution);
+
+        EventBus.getDefault().post(new ScriptEvent(execution));
+
     }
 
     private void onFinish(ScriptExecution execution) {
@@ -30,15 +35,16 @@ public class ScriptExecutionGlobalListener implements ScriptExecutionListener {
         if (millis == null)
             return;
         double seconds = (System.currentTimeMillis() - millis) / 1000.0;
-        AutoJs.getInstance().getScriptEngineService().getGlobalConsole()
-                .verbose(GlobalAppContext.getString(R.string.text_execution_finished), execution.getSource().toString(), seconds);
-        EventBus.getDefault().post(new ScriptEvent(execution));
+        AutoJs.getInstance().getScriptEngineService().getGlobalConsole().verbose(GlobalAppContext.getString(R.string.text_execution_finished), execution.getSource().toString(), seconds);
 
     }
 
     @Override
     public void onException(ScriptExecution execution, Exception e) {
         onFinish(execution);
+        Log.e("aaa","------>onException"+e.getMessage());
+        EventBus.getDefault().post(new ScriptEvent(execution,e));
+
     }
 
 }

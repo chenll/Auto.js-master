@@ -1,4 +1,4 @@
-package com.stardust.auojs.inrt;
+package com.stardust.auojs.inrt.copy;
 
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -12,18 +12,19 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.text.style.ImageSpan;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
-import com.qmuiteam.qmui.util.QMUISpanHelper;
 import com.qmuiteam.qmui.widget.dialog.QMUIDialog;
 import com.qmuiteam.qmui.widget.dialog.QMUITipDialog;
 import com.stardust.Event.ScriptEvent;
 import com.stardust.Event.VolumeUpEvent;
+import com.stardust.auojs.inrt.AppAutoMgr;
+import com.stardust.auojs.inrt.LogActivity;
+import com.stardust.auojs.inrt.MD5Security;
+import com.stardust.auojs.inrt.R;
 import com.stardust.auojs.inrt.adapter.AppSelectAdapter;
 import com.stardust.auojs.inrt.adapter.RvLogAdapter;
 import com.stardust.auojs.inrt.bean.AppBean;
@@ -31,7 +32,6 @@ import com.stardust.auojs.inrt.bean.NewTaskBean;
 import com.stardust.auojs.inrt.bean.NewTaskResponse;
 import com.stardust.auojs.inrt.launch.GlobalProjectLauncher;
 import com.stardust.autojs.core.http.MutableOkHttp;
-import com.stardust.autojs.runtime.api.AppUtils;
 import com.stardust.view.accessibility.AccessibilityService;
 
 import org.greenrobot.eventbus.EventBus;
@@ -53,10 +53,10 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 
-public class AppSelectActivity extends AppCompatActivity {
+public class AppSelectActivityCopy extends AppCompatActivity {
     private RecyclerView mRecyclerView;
-    private AppSelectAdapter mAppSelectAdapter;
-    private List<NewTaskBean> mNewTaskBeans;
+    private AppSelectAdapterCopy mAppSelectAdapter;
+    private List<AppBean> mAppBeans;
     private RecyclerView mRvLog;
     private RvLogAdapter mRvLogAdapter;
     private List<String> mLogs;
@@ -85,7 +85,13 @@ public class AppSelectActivity extends AppCompatActivity {
             if (!checkDrawOverlays()) {
                 return;
             }
-
+            AppAutoMgr.CURRENTPACKAGENAME = mAppSelectAdapter.getItem(position).getAppPackageName();
+            GlobalProjectLauncher.getInstance().launch(AppSelectActivityCopy.this);
+            Intent intent = new Intent(AppSelectActivityCopy.this, LogActivity.class);
+            Bundle b = new Bundle();
+            b.putParcelable("appbean", mAppSelectAdapter.getItem(position));
+            intent.putExtras(b);
+            startActivity(intent);
         });
         findViewById(R.id.btn_test).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -97,36 +103,12 @@ public class AppSelectActivity extends AppCompatActivity {
                     return;
                 }
                 if (mEtSign.getText() == null || TextUtils.isEmpty(mEtSign.getText())) {
-                    Toast.makeText(AppSelectActivity.this, "请先输入您的密钥", Toast.LENGTH_LONG).show();
-                    return;
-                }
-                mNewTaskBeans.clear();
-                mAppSelectAdapter.notifyDataSetChanged();
-                getTask(mEtSign.getText().toString());
-            }
-        });
-
-        findViewById(R.id.btn_start).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!checkAccessibility()) {
-                    return;
-                }
-                if (!checkDrawOverlays()) {
+                    Toast.makeText(AppSelectActivityCopy.this, "请先输入您的密钥", Toast.LENGTH_LONG).show();
                     return;
                 }
 
-                if (mNewTaskBeans == null || mNewTaskBeans.isEmpty()) {
-                    Toast.makeText(AppSelectActivity.this, "暂无可执行任务", Toast.LENGTH_LONG).show();
-                    return;
-                }
                 queue.clear();
-                for (NewTaskBean newTaskBean : mNewTaskBeans) {
-                    newTaskBean.setExecuted(false);
-                    queue.offer(newTaskBean);
-                }
-                mAppSelectAdapter.notifyDataSetChanged();
-                runTask();
+                getTask(mEtSign.getText().toString());
             }
         });
 
@@ -151,12 +133,13 @@ public class AppSelectActivity extends AppCompatActivity {
         mRecyclerView = (RecyclerView) findViewById(R.id.rv_apps);
         GridLayoutManager layoutManage = new GridLayoutManager(this, 2);
         mRecyclerView.setLayoutManager(layoutManage);
-        mNewTaskBeans = new ArrayList<>();
-        mAppSelectAdapter = new AppSelectAdapter(R.layout.itme_app, mNewTaskBeans);
+        mAppBeans = new ArrayList<>();
+        initDatas();
+        mAppSelectAdapter = new AppSelectAdapterCopy(R.layout.itme_app, mAppBeans);
         mRecyclerView.setAdapter(mAppSelectAdapter);
 
 
-        tipDialog = new QMUITipDialog.Builder(AppSelectActivity.this)
+        tipDialog = new QMUITipDialog.Builder(AppSelectActivityCopy.this)
                 .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
                 .setTipWord("正在加载数据，请稍等...")
                 .create();
@@ -197,8 +180,6 @@ public class AppSelectActivity extends AppCompatActivity {
 
                     @Override
                     public void onNext(NewTaskResponse integer) {
-                        mNewTaskBeans.addAll(integer.getDatalist());
-                        mAppSelectAdapter.notifyDataSetChanged();
 
                         StringBuffer stringBuffer = new StringBuffer();
                         for (NewTaskBean newTaskBean : integer.getDatalist()) {
@@ -206,16 +187,17 @@ public class AppSelectActivity extends AppCompatActivity {
                             stringBuffer.append(newTaskBean.getF_AppName());
                             if (newTaskBean != integer.getDatalist().get(integer.getDatalist().size() - 1)) {
                                 stringBuffer.append("\n");
+
                             }
                         }
 
-//                        new QMUIDialog.MessageDialogBuilder(AppSelectActivity.this).setTitle("任务列表").setMessage(stringBuffer.toString())
-//                                .addAction("开始执行", (dialog, index) -> {
-//                                    dialog.dismiss();
-//                                    mLogs.clear();
-//                                    mRvLogAdapter.notifyDataSetChanged();
-//                                    runTask();
-//                                }).addAction("取消", (dialog, index) -> dialog.dismiss()).show();
+                        new QMUIDialog.MessageDialogBuilder(AppSelectActivityCopy.this).setTitle("任务列表").setMessage(stringBuffer.toString())
+                                .addAction("开始执行", (dialog, index) -> {
+                                    dialog.dismiss();
+                                    mLogs.clear();
+                                    mRvLogAdapter.notifyDataSetChanged();
+                                    runTask();
+                                }).addAction("取消", (dialog, index) -> dialog.dismiss()).show();
 
 
                     }
@@ -223,7 +205,7 @@ public class AppSelectActivity extends AppCompatActivity {
                     @Override
                     public void onError(Throwable e) {
                         tipDialog.dismiss();
-                        Toast.makeText(AppSelectActivity.this, TextUtils.isEmpty(e.getMessage()) ? "任务获取失败" : e.getMessage(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(AppSelectActivityCopy.this, TextUtils.isEmpty(e.getMessage()) ? "任务获取失败" : e.getMessage(), Toast.LENGTH_LONG).show();
                     }
 
                     @Override
@@ -235,6 +217,21 @@ public class AppSelectActivity extends AppCompatActivity {
 
     }
 
+    private void initDatas() {
+        String[] apps = getResources().getStringArray(R.array.apps);
+        for (String appLable : apps) {
+            String[] appitem = getResources().getStringArray(getResources().getIdentifier(appLable, "array", getPackageName()));
+            AppBean appBean = new AppBean();
+            appBean.setLable(appLable);
+            appBean.setAppName(appitem[0]);
+            appBean.setAppPackageName(appitem[1]);
+            appBean.setAppVersionName(appitem[2]);
+            appBean.setAppVersion(appitem[3]);
+            mAppBeans.add(appBean);
+        }
+
+
+    }
 
     private void addLog(String str) {
         mLogs.add(str);
@@ -247,7 +244,7 @@ public class AppSelectActivity extends AppCompatActivity {
             addLog("任务全部执行结束");
             return;
         }
-        PackageInfo packageInfo = com.stardust.utils.AppUtils.getPackageInfo(AppSelectActivity.this, newTaskBean.getF_PackageName());
+        PackageInfo packageInfo = com.stardust.utils.AppUtils.getPackageInfo(AppSelectActivityCopy.this, newTaskBean.getF_PackageName());
         if (packageInfo == null) {
             addLog("[" + newTaskBean.getF_AppName() + "]未安装");
             runTask();
@@ -260,7 +257,7 @@ public class AppSelectActivity extends AppCompatActivity {
         }
         AppAutoMgr.CURRENTPACKAGENAME = newTaskBean.getF_PackageName();
         AppAutoMgr.sNewTaskBean = newTaskBean;
-        GlobalProjectLauncher.getInstance().launch(AppSelectActivity.this);
+        GlobalProjectLauncher.getInstance().launch(AppSelectActivityCopy.this);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -268,13 +265,6 @@ public class AppSelectActivity extends AppCompatActivity {
         NewTaskBean taskBean = AppAutoMgr.sNewTaskBean;
         if (taskBean != null) {
             addLog("[" + taskBean.getF_AppName() + "]执行完成");
-            for (NewTaskBean newTaskBean : mNewTaskBeans) {
-                if(newTaskBean.getF_PackageName().equals(taskBean.getF_PackageName())){
-                    newTaskBean.setExecuted(true);
-                    newTaskBean.setExecutedSussed(event.getException()==null);
-                }
-            }
-            mAppSelectAdapter.notifyDataSetChanged();
         }
         runTask();
     }
@@ -302,7 +292,7 @@ public class AppSelectActivity extends AppCompatActivity {
         if (AccessibilityService.getInstance() != null) {
             return true;
         }
-        new QMUIDialog.MessageDialogBuilder(AppSelectActivity.this).setMessage("授权\"无障碍\"相关权限之后,后才能用哦")
+        new QMUIDialog.MessageDialogBuilder(AppSelectActivityCopy.this).setMessage("授权\"无障碍\"相关权限之后,后才能用哦")
                 .addAction("去设置", (dialog, index) -> {
                     Intent intent = new Intent();
                     intent.setAction("android.settings.ACCESSIBILITY_SETTINGS");
@@ -317,7 +307,7 @@ public class AppSelectActivity extends AppCompatActivity {
             return true;
         }
 
-        new QMUIDialog.MessageDialogBuilder(AppSelectActivity.this).setMessage("Android 7.1.1 以上, 请开启悬浮窗权限")
+        new QMUIDialog.MessageDialogBuilder(AppSelectActivityCopy.this).setMessage("Android 7.1.1 以上, 请开启悬浮窗权限")
                 .addAction("去设置", (dialog, index) -> {
                     Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
                     intent.setData(Uri.parse("package:" + getPackageName()));

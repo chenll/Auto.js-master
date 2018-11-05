@@ -23,6 +23,11 @@ public class NewTaskBean {
     private int singleSlideTimes;
     private int slidingInterval;
 
+
+
+    private boolean isExecuted = false;
+    private boolean isExecutedSussed ;
+
     public String getF_PackageName() {
         return f_PackageName;
     }
@@ -85,5 +90,20 @@ public class NewTaskBean {
 
     public void setSlidingInterval(int slidingInterval) {
         this.slidingInterval = slidingInterval;
+    }
+    public boolean isExecuted() {
+        return isExecuted;
+    }
+
+    public void setExecuted(boolean executed) {
+        isExecuted = executed;
+    }
+
+    public boolean isExecutedSussed() {
+        return isExecutedSussed;
+    }
+
+    public void setExecutedSussed(boolean executedSussed) {
+        isExecutedSussed = executedSussed;
     }
 }

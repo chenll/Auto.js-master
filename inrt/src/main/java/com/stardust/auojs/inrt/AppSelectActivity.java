@@ -12,26 +12,21 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.text.style.ImageSpan;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
-import com.qmuiteam.qmui.util.QMUISpanHelper;
 import com.qmuiteam.qmui.widget.dialog.QMUIDialog;
 import com.qmuiteam.qmui.widget.dialog.QMUITipDialog;
 import com.stardust.Event.ScriptEvent;
 import com.stardust.Event.VolumeUpEvent;
 import com.stardust.auojs.inrt.adapter.AppSelectAdapter;
 import com.stardust.auojs.inrt.adapter.RvLogAdapter;
-import com.stardust.auojs.inrt.bean.AppBean;
 import com.stardust.auojs.inrt.bean.NewTaskBean;
 import com.stardust.auojs.inrt.bean.NewTaskResponse;
 import com.stardust.auojs.inrt.launch.GlobalProjectLauncher;
 import com.stardust.autojs.core.http.MutableOkHttp;
-import com.stardust.autojs.runtime.api.AppUtils;
 import com.stardust.view.accessibility.AccessibilityService;
 
 import org.greenrobot.eventbus.EventBus;

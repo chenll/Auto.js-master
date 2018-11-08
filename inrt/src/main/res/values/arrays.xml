@@ -40,7 +40,7 @@
         <item></item>
         <item>com.xiangzi.jukandian:id/item_artical_three_title_tv</item>
         <item>com.xiangzi.jukandian:id/rv_artical_list_view</item>
-        <item>com.xiangzi.jukandian:id/no_reg_iv</item>
+        <item></item>
         <item>com.xiangzi.jukandian:id/sure_quit</item>
     </string-array>
 

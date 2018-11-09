@@ -85,12 +85,7 @@ public class AppSelectActivity extends AppCompatActivity {
         findViewById(R.id.btn_test).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!checkAccessibility()) {
-                    return;
-                }
-                if (!checkDrawOverlays()) {
-                    return;
-                }
+
                 if (mEtSign.getText() == null || TextUtils.isEmpty(mEtSign.getText())) {
                     Toast.makeText(AppSelectActivity.this, "请先输入您的密钥", Toast.LENGTH_LONG).show();
                     return;
@@ -110,6 +105,7 @@ public class AppSelectActivity extends AppCompatActivity {
                 if (!checkDrawOverlays()) {
                     return;
                 }
+
 
                 if (mNewTaskBeans == null || mNewTaskBeans.isEmpty()) {
                     Toast.makeText(AppSelectActivity.this, "暂无可执行任务", Toast.LENGTH_LONG).show();
@@ -264,9 +260,9 @@ public class AppSelectActivity extends AppCompatActivity {
         if (taskBean != null) {
             addLog("[" + taskBean.getF_AppName() + "]执行完成");
             for (NewTaskBean newTaskBean : mNewTaskBeans) {
-                if(newTaskBean.getF_PackageName().equals(taskBean.getF_PackageName())){
+                if (newTaskBean.getF_PackageName().equals(taskBean.getF_PackageName())) {
                     newTaskBean.setExecuted(true);
-                    newTaskBean.setExecutedSussed(event.getException()==null);
+                    newTaskBean.setExecutedSussed(event.getException() == null);
                 }
             }
             mAppSelectAdapter.notifyDataSetChanged();

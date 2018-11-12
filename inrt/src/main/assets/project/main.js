@@ -35,7 +35,14 @@ android.util.Log.e("aaa", "----------------------------------");
 toast("[" + appName + "]脚本开始运行");
 
 //运行之前先关闭
-shell("am force-stop " + pName, true);
+
+var result = shell("am force-stop " + pName, true);
+if(result.code != 0){
+  toast("执行失败！请检查是否授予Root权限");
+  org.greenrobot.eventbus.EventBus.getDefault().post(new com.stardust.Event.VolumeUpEvent());
+  exit();
+}
+
 var task = com.stardust.auojs.inrt.AppAutoMgr.getCurrentTask();
 //打开app
 if (!app.launch(pName)) {

@@ -29,12 +29,9 @@ import com.stardust.Event.ScriptEvent;
 import com.stardust.Event.VolumeUpEvent;
 import com.stardust.auojs.inrt.adapter.AppSelectAdapter;
 import com.stardust.auojs.inrt.adapter.RvLogAdapter;
-import com.stardust.auojs.inrt.autojs.AutoJs;
 import com.stardust.auojs.inrt.bean.NewTaskBean;
 import com.stardust.auojs.inrt.bean.NewTaskResponse;
 import com.stardust.auojs.inrt.launch.GlobalProjectLauncher;
-import com.stardust.autojs.core.console.ConsoleView;
-import com.stardust.autojs.core.console.StardustConsole;
 import com.stardust.autojs.core.http.MutableOkHttp;
 import com.stardust.view.accessibility.AccessibilityService;
 
@@ -48,12 +45,14 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -69,8 +68,11 @@ public class AppSelectActivity extends AppCompatActivity {
 
     private QMUITipDialog tipDialog;
     private EditText mEtSign;
+    private Disposable mDisposable;
+    private boolean isStarted;
 
-    Queue<NewTaskBean> queue = new LinkedList<NewTaskBean>();
+
+    private Queue<NewTaskBean> queue = new LinkedList<NewTaskBean>();
 
 
     @Override
@@ -116,8 +118,6 @@ public class AppSelectActivity extends AppCompatActivity {
                 if (!checkDrawOverlays()) {
                     return;
                 }
-
-
                 if (mNewTaskBeans == null || mNewTaskBeans.isEmpty()) {
                     Toast.makeText(AppSelectActivity.this, "暂无可执行任务", Toast.LENGTH_LONG).show();
                     return;
@@ -128,6 +128,7 @@ public class AppSelectActivity extends AppCompatActivity {
                     queue.offer(newTaskBean);
                 }
                 mAppSelectAdapter.notifyDataSetChanged();
+                isStarted = true;
                 runTask();
             }
         });
@@ -258,9 +259,13 @@ public class AppSelectActivity extends AppCompatActivity {
     }
 
     private void runTask() {
+        if (GlobalProjectLauncher.getInstance().isRunning()) {
+            return;
+        }
         NewTaskBean newTaskBean = queue.poll();
         if (newTaskBean == null) {
             addLog("任务全部执行结束");
+            isStarted = false;
             return;
         }
         PackageInfo packageInfo = com.stardust.utils.AppUtils.getPackageInfo(AppSelectActivity.this, newTaskBean.getF_PackageName());
@@ -298,21 +303,48 @@ public class AppSelectActivity extends AppCompatActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onVolumeUp(VolumeUpEvent event) {
         queue.clear();
+        isStarted = false;
     }
 
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        cancel();
         if (EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().unregister(this);
         }
     }
 
+
     @Override
     protected void onResume() {
         super.onResume();
+        if (!isStarted) {
+            return;
+        }
+        mDisposable = Observable.timer(1000, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<Long>() {
+                    @Override
+                    public void accept(Long aLong) throws Exception {
+                        runTask();
+                        Log.e("aaa", "=======1");
+
+                    }
+                });
     }
+
+
+    /**
+     * 取消订阅
+     */
+    public void cancel() {
+        if (mDisposable != null && !mDisposable.isDisposed()) {
+            mDisposable.dispose();
+        }
+    }
+
 
     private boolean checkAccessibility() {
         if (AccessibilityService.getInstance() != null) {

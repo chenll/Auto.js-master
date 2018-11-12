@@ -1,5 +1,7 @@
 package com.stardust.auojs.inrt;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.net.Uri;
@@ -11,7 +13,11 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.telephony.TelephonyManager;
 import android.text.TextUtils;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -23,9 +29,12 @@ import com.stardust.Event.ScriptEvent;
 import com.stardust.Event.VolumeUpEvent;
 import com.stardust.auojs.inrt.adapter.AppSelectAdapter;
 import com.stardust.auojs.inrt.adapter.RvLogAdapter;
+import com.stardust.auojs.inrt.autojs.AutoJs;
 import com.stardust.auojs.inrt.bean.NewTaskBean;
 import com.stardust.auojs.inrt.bean.NewTaskResponse;
 import com.stardust.auojs.inrt.launch.GlobalProjectLauncher;
+import com.stardust.autojs.core.console.ConsoleView;
+import com.stardust.autojs.core.console.StardustConsole;
 import com.stardust.autojs.core.http.MutableOkHttp;
 import com.stardust.view.accessibility.AccessibilityService;
 
@@ -85,7 +94,7 @@ public class AppSelectActivity extends AppCompatActivity {
         findViewById(R.id.btn_test).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+//                mEtSign.setText("android");
                 if (mEtSign.getText() == null || TextUtils.isEmpty(mEtSign.getText())) {
                     Toast.makeText(AppSelectActivity.this, "请先输入您的密钥", Toast.LENGTH_LONG).show();
                     return;
@@ -128,7 +137,12 @@ public class AppSelectActivity extends AppCompatActivity {
         mEtSign = (EditText) findViewById(R.id.et_sign);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("App列表");
+        setSupportActionBar(toolbar);
 
+//        ConsoleView consoleView = (ConsoleView) findViewById(R.id.console);
+//        consoleView.setConsole((StardustConsole) AutoJs.getInstance().getGlobalConsole());
+//        consoleView.findViewById(R.id.input_container).setVisibility(View.GONE);
+//
 
         mRvLog = (RecyclerView) findViewById(R.id.rv_log);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
@@ -153,9 +167,15 @@ public class AppSelectActivity extends AppCompatActivity {
                 .create();
     }
 
+    @Override
+    public void onBackPressed() {
+    }
+
     private void getTask(String sign) {
         Observable.create((ObservableOnSubscribe<NewTaskResponse>) emitter -> {
-            Request request = new Request.Builder().url("http://api.u9er.com/appData.ashx?sign=" + MD5Security.getMD5(sign)).build();
+
+            Request request = new Request.Builder().url("http://api.u9er.com/appData.ashx?sign=" + MD5Security.getMD5(sign) + "&key=" + sign+"&imei=" + getIMEI(AppSelectActivity.this)).build();
+            Log.e("aaa", request.url().toString());
             Response response = new MutableOkHttp().client().newCall(request).execute();
             if (response == null || !response.isSuccessful() || response.body() == null) {
                 emitter.onError(new RuntimeException("任务获取失败,请检查网络后再试."));
@@ -164,6 +184,7 @@ public class AppSelectActivity extends AppCompatActivity {
             try {
                 Gson gson = new Gson();
                 NewTaskResponse taskBean = gson.fromJson(response.body().string(), NewTaskResponse.class);
+//                NewTaskResponse taskBean = gson.fromJson("{\"code\":\"0000\",\"msg\":\"ok\",\"datalist\":[{\"f_PackageName\":\"com.kuaima.browser\",\"f_AppName\":\"快马小报\",\"f_AppVersion\":\"1.7.3\",\"totalNumber\":5,\"slidingSpeed\":3000,\"waitForTime\":5000,\"singleSlideTimes\":3,\"slidingInterval\":3000}]}", NewTaskResponse.class);
                 if (taskBean == null) {
                     emitter.onError(new RuntimeException("任务获取失败,请稍后再试."));
 
@@ -276,6 +297,7 @@ public class AppSelectActivity extends AppCompatActivity {
     }
 
 
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -318,4 +340,35 @@ public class AppSelectActivity extends AppCompatActivity {
 
         return false;
     }
+
+    private static final String getIMEI(Context context) {
+        try {
+            //实例化TelephonyManager对象
+            TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+            //获取IMEI号
+            @SuppressLint("MissingPermission") String imei = telephonyManager.getDeviceId();
+            //在次做个验证，也不是什么时候都能获取到的啊
+            if (imei == null) {
+                imei = "";
+            }
+            return imei;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
+
+    }
+
+        @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        startActivity(new Intent(this, LogActivity.class));
+        return true;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_log, menu);
+        return true;
+    }
+
 }

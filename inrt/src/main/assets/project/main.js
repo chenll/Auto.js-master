@@ -21,13 +21,12 @@ var targetTextId = appAutoMessage.getTargetTextId();
 //首页上下滚动view的id
 var rollViewId = appAutoMessage.getRollViewId();
 var dialogIds = appAutoMessage.getDialogIds();
-var exitBtnId = appAutoMessage.getExitBtnId();
 
 android.util.Log.e("aaa", "-----------------" + appName + "-----------------");
-android.util.Log.e("aaa", pName);
-android.util.Log.e("aaa", atyMain);
-android.util.Log.e("aaa", atyDisturb);
-android.util.Log.e("aaa", targetTextId);
+android.util.Log.e("aaa", pName + "");
+android.util.Log.e("aaa", atyMain + "");
+android.util.Log.e("aaa", atyDisturb + "");
+android.util.Log.e("aaa", targetTextId + "");
 android.util.Log.e("aaa", rollViewId + "");
 android.util.Log.e("aaa", dialogIds + "");
 android.util.Log.e("aaa", "----------------------------------");
@@ -36,10 +35,10 @@ android.util.Log.e("aaa", "----------------------------------");
 toast("[" + appName + "]脚本开始运行");
 
 //运行之前先关闭
-shell("am force-stop " + pName, true)
+shell("am force-stop " + pName, true);
 var task = com.stardust.auojs.inrt.AppAutoMgr.getCurrentTask();
 //打开app
-if (!app.launchApp(appName)) {
+if (!app.launch(pName)) {
     toast("[" + appName + "]打开失败,请检查你是否安装");
     exit();
 }
@@ -70,7 +69,6 @@ while (global.currentActivity() != atyMain && global.currentActivity() != atyDis
 
 if (getListView() == null) {
     toast("任务运行异常1001")
-    exitApp();
     exitTask();
 }
 //剩余次数
@@ -78,43 +76,50 @@ var residueDegree = task.getTotalNumber();
 //错误最多尝试100次
 var timeRetry = new Date().getTime();
 while (residueDegree > 0) {
-    if (currentPackage() != pName) {
-        toast("您已离开 [" + appName + "] 任务结束");
+//    if (currentPackage() != pName) {
+//        toast("您已离开 [" + appName + "] 任务结束");
+//        exitTask();
+//    }
+    if (new Date().getTime() - timeRetry >= 10000) {
+        toast("任务运行异常1003");
         exitTask();
-    }
-   if (new Date().getTime() - timeRetry >= 10000) {
-       toast("任务运行异常1003");
-        exitApp();
     }
     var textViews = id(targetTextId).find();
     if (textViews != null && textViews.length != 0) {
         android.util.Log.e("aaa", "textview个数" + textViews.length);
-        for (var j = 0; j < Math.min(textViews.length, residueDegree); j++) {
-            android.util.Log.e("aaa", "==========="+Math.min(textViews.length, residueDegree));
+        for (var j = 0; j < textViews.length; j++) {
+            android.util.Log.e("aaa",j+ "===========" +textViews.length);
             var textView = textViews[j];
-            if (textView != null && textView.parent() !== null) {
-                if (executeTask(textViews[j])) {
+            if (textView != null && textView.parent() != null) {
+                if (executeTask(textView)) {
                     residueDegree--;
                     timeRetry = new Date().getTime();
-                }else{
+                } else {
                     android.util.Log.e("aaa", "点击失败");
                 }
             } else {
                 closeDialog();
                 android.util.Log.e("aaa", "textview集合查找item失败");
             }
+            if(residueDegree <=0){
+                break;
+            }
         }
-        var listView = getListView();
-        if (listView == null) {
-            goBack();
-            sleep(500);
-        } else {
-//            scrollDown(1);
-            shell("input swipe " + 300 +" "+(device.height) * 4 / 5+" "+300+" "+(device.height) / 4+" "+task.getSlidingSpeed(), true)
-            //            listView.scrollDown();
+        if (residueDegree > 0) {
+            var listView = getListView();
+            if (listView == null) {
+                goBack();
+                sleep(500);
+            } else {
+                //            scrollDown(1);
+                if (pName == "cn.weli.story") {
+                    shell("input swipe " + 300 + " " + (device.height) * 2 / 3 + " " + 300 + " " + (device.height) / 5 + " " + task.getSlidingSpeed(), true);
+                } else {
+                    shell("input swipe " + 300 + " " + (device.height) * 4 / 5 + " " + 300 + " " + (device.height) / 4 + " " + task.getSlidingSpeed(), true);
+                }
+            }
+            //        swipe(300, (device.height) * 4 / 5, 300, (device.height) / 4, task.getSlidingSpeed());
         }
-
-        //        swipe(300, (device.height) * 4 / 5, 300, (device.height) / 4, task.getSlidingSpeed());
     } else {
         android.util.Log.e("aaa", "未找到相关的textview集合");
         getListView();
@@ -122,28 +127,36 @@ while (residueDegree > 0) {
 }
 
 
-exitApp();
-toast( "[" + appName + "]任务运行结束")
+toast( "[" + appName + "]任务运行结束");
 exitTask();
 
 
 function exitTask() {
     //    thread.interrupt();
+    exitApp();
     exit();
 }
 function goBack(){
-  if (currentPackage() != pName) {
-       return;
-    }
-        back();
+//  if (currentPackage() != pName ) {
+//       return;
+//    }
+  back();
 }
+function getListViewTimeOut(maxTime) {
+    if (rollViewId == null || rollViewId  == "") {
+        return className("android.widget.ListView").findOne(maxTime);
+    } else {
+        return id(rollViewId).findOne(maxTime);
 
+    }
+
+}
 function getListView() {
 
     //className("android.widget.ListView")
     android.util.Log.e("aaa", "getListView--->开始查找0");
     closeDialog();
-    var listViewTemp = id(rollViewId).findOne(1000);
+    var listViewTemp = getListViewTimeOut(1000);
     if (listViewTemp == null) {
         closeDialog();
     } else {
@@ -151,7 +164,7 @@ function getListView() {
     }
     android.util.Log.e("aaa", "getListView--->开始查找1");
 
-    listViewTemp = id(rollViewId).findOne(1000);
+    listViewTemp = getListViewTimeOut(1000);
     if (listViewTemp == null) {
         goBack();
     } else {
@@ -159,14 +172,14 @@ function getListView() {
     }
     android.util.Log.e("aaa", "getListView--->开始查找2");
 
-    listViewTemp = id(rollViewId).findOne(1500);
+    listViewTemp = getListViewTimeOut(1500);
     if (listViewTemp == null) {
         closeDialog();
     } else {
         return listViewTemp;
     }
     android.util.Log.e("aaa", "getListView--->开始查找3");
-    listViewTemp = id(rollViewId).findOne(1500);
+    listViewTemp = getListViewTimeOut(1500);
     if (listViewTemp == null) {
         goBack();
     } else {
@@ -175,7 +188,7 @@ function getListView() {
 
     android.util.Log.e("aaa", "getListView--->开始查找24");
 
-    listViewTemp = id(rollViewId).findOne(1500);
+    listViewTemp = getListViewTimeOut(1500);
     if (listViewTemp == null) {
         closeDialog();
     } else {
@@ -183,7 +196,7 @@ function getListView() {
     }
     android.util.Log.e("aaa", "getListView--->开始查找5");
 
-    listViewTemp = id(rollViewId).findOne(1500);
+    listViewTemp = getListViewTimeOut(1500);
     if (listViewTemp == null) {
         goBack();
     } else {
@@ -191,14 +204,14 @@ function getListView() {
     }
     android.util.Log.e("aaa", "getListView--->开始查找6");
 
-    listViewTemp = id(rollViewId).findOne(1000);
+    listViewTemp = getListViewTimeOut(1000); ;
     closeDialog();
     return listViewTemp;
 }
 
 //关闭首页弹窗
 function closeDialog() {
-    if (dialogIds == null) {
+    if (dialogIds == null ||dialogIds.length==0 ) {
         return;
     }
     for (var i = 0; i < dialogIds.length; i++) {
@@ -219,7 +232,6 @@ function closeDialogByid(viewId) {
 function executeTask(textView) {
     sleep(1000);
     if (getListView() == null) {
-        exitApp();
         toast("任务运行异常1002")
         exitTask();
     }
@@ -237,7 +249,7 @@ function executeTask(textView) {
     if (guangg != null && guangg.size() != 0) {
         //        toast("发现广告，直接跳过");
         android.util.Log.e("aaa", "跳过广告");
-                            timeRetry = new Date().getTime();
+        timeRetry = new Date().getTime();
 
         return false;
     }
@@ -246,7 +258,7 @@ function executeTask(textView) {
     if (xiazai != null && xiazai.size() != 0) {
         //        toast("发现广告，直接跳过");
         android.util.Log.e("aaa", "跳过下载");
-                            timeRetry = new Date().getTime();
+             timeRetry = new Date().getTime();
 
         return false;
     }
@@ -254,9 +266,12 @@ function executeTask(textView) {
     if (com.stardust.datebase.greenDao.GreenDaoManger.isInserted(pName, titleStr)) {
         //        toast("已经点过了，直接跳过");
         android.util.Log.e("aaa", "跳过已读");
+                timeRetry = new Date().getTime();
+
         return false;
     }
     if (click(titleStr)) {
+        android.util.Log.e("aaa", titleStr+"");
         com.stardust.datebase.greenDao.GreenDaoManger.insert(pName, titleStr);
         for (var i = 0; i < task.getSingleSlideTimes(); i++) {
             sleep(1000);
@@ -264,7 +279,12 @@ function executeTask(textView) {
             // getSlidingSpeed滑动速度
             // swipe(300, 1600, 300, 1020, task.getSlidingSpeed());
 //            scrollDown(0);
-                        shell("input swipe " + 300 +" "+(device.height) * 4 / 5+" "+300+" "+(device.height) / 3+" "+task.getSlidingSpeed(), true)
+              shell("input swipe " + 300 +" "+(device.height) * 4 / 5+" "+300+" "+(device.height) / 3+" "+task.getSlidingSpeed(), true)
+
+                  var readAll = textContains("查看全文").findOnce();
+                  if(readAll!=null){
+                     readAll.click();
+                  }
             //swipe(300, (device.height) * 4 / 5, 300, (device.height) / 3, task.getSlidingSpeed());
             //SlidingInterval 每次滑动间隔时间
             sleep(task.getSlidingInterval());
@@ -280,7 +300,7 @@ function executeTask(textView) {
 }
 
 function exitApp() {
-     shell("am force-stop " + pName, true)
+     shell("am force-stop " + pName, true);
 //
 //    if (exitBtnId == null || exitBtnId == "") {
 //        back();

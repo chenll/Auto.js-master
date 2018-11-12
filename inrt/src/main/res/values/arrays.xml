@@ -22,7 +22,6 @@
         <item></item>
         <item>com.yanhui.qktx:id/tv_title</item>
         <item>com.yanhui.qktx:id/rv_news</item>
-        <item>com.yanhui.qktx:id/img_close</item>
         <item></item>
     </string-array>
 
@@ -41,7 +40,6 @@
         <item>com.xiangzi.jukandian:id/item_artical_three_title_tv</item>
         <item>com.xiangzi.jukandian:id/rv_artical_list_view</item>
         <item></item>
-        <item>com.xiangzi.jukandian:id/sure_quit</item>
     </string-array>
 
 
@@ -59,7 +57,6 @@
         <item>com.ldzs.zhangxin:id/tv_article_title</item>
         <item>com.ldzs.zhangxin:id/pull_list_view</item>
         <item>com.ldzs.zhangxin:id/iv_close_packet|com.ldzs.zhangxin:id/btn_close</item>
-        <item>com.ldzs.zhangxin:id/logout_ok_text</item>
     </string-array>
 
 
@@ -79,7 +76,6 @@
         <item>com.sogou.todayread:id/news_title</item>
         <item>com.sogou.todayread:id/news_listview</item>
         <item>com.sogou.todayread:id/red_packet_close_btn|com.sogou.todayread:id/effective_close_btn</item>
-        <item></item>
     </string-array>
 
 
@@ -97,8 +93,48 @@
         <item>cn.youth.news:id/tv_article_title</item>
         <item>cn.youth.news:id/pull_list_view</item>
         <item>cn.youth.news:id/tv_pass|android:id/button2|cn.youth.news:id/iv_close|cn.youth.news:id/btn_close</item>
-        <item>cn.youth.news:id/tv_exit</item>
     </string-array>
 
 
+
+    <string-array name="com.yooee.headline">
+        <item>聚合头条</item>
+        <item>com.yooee.headline.ui.activity.MainActivity</item>
+        <item></item>
+        <item>com.yooee.headline:id/title</item>
+        <item>com.yooee.headline:id/list</item>
+        <item>com.yooee.headline:id/close|com.yooee.headline:id/next|com.yooee.headline:id/get</item>
+    </string-array>
+
+
+
+    <string-array name="cn.weli.story">
+        <item>微鲤看看</item>
+        <item>com.etouch.ecalendar.MainActivity</item>
+        <item></item>
+        <item>cn.weli.story:id/tv_title</item>
+        <item>cn.weli.story:id/recyclerView</item>
+        <item>cn.weli.story:id/iv_close|cn.weli.story:id/bt_ok|cn.weli.story:id/iv_take|cn.weli.story:id/tv_new_comer_gain</item>
+    </string-array>
+
+
+
+    <string-array name="com.kuaima.browser">
+        <item>快马小报</item>
+        <item>com.kuaima.browser.module.MainActivity</item>
+        <item></item>
+        <item>com.kuaima.browser:id/tv_title</item>
+        <item>com.kuaima.browser:id/lv_reward_mission</item>
+        <item>com.kuaima.browser:id/iv_cancle|com.kuaima.browser:id/cust_left</item>
+    </string-array>
+
+
+    <string-array name="com.weikuai.wknews">
+        <item>值得看看</item>
+        <item>com.weikuai.wknews.ui.activity.MainActivity</item>
+        <item></item>
+        <item>com.weikuai.wknews:id/new_title</item>
+        <item></item>
+        <item>com.weikuai.wknews:id/iv_close</item>
+    </string-array>
 </resources>

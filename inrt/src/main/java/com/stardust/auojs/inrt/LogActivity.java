@@ -26,12 +26,12 @@ public class LogActivity extends AppCompatActivity implements View.OnClickListen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mAppBean = getIntent().getExtras().getParcelable("appbean");
+//        mAppBean = getIntent().getExtras().getParcelable("appbean");
         setupView();
 
-        AppAutoMgr.CURRENTPACKAGENAME = mAppBean.getAppPackageName();
+//        AppAutoMgr.CURRENTPACKAGENAME = mAppBean.getAppPackageName();
 
-        GlobalProjectLauncher.getInstance().launch(LogActivity.this);
+//        GlobalProjectLauncher.getInstance().launch(LogActivity.this);
 //        new AssetsProjectLauncher("project_" + mAppBean.getLable(), GlobalAppContext.get()).launch(LogActivity.this);
 //        new AssetsProjectLauncher("project", GlobalAppContext.get()).launch(LogActivity.this);
     }
@@ -39,7 +39,8 @@ public class LogActivity extends AppCompatActivity implements View.OnClickListen
     private void setupView() {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle(mAppBean.getAppName());
+//        toolbar.setTitle(mAppBean.getAppName());
+        toolbar.setTitle("运行日志");
         setSupportActionBar(toolbar);
         ConsoleView consoleView = (ConsoleView) findViewById(R.id.console);
         consoleView.setConsole((StardustConsole) AutoJs.getInstance().getGlobalConsole());

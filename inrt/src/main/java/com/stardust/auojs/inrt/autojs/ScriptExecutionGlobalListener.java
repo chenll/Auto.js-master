@@ -26,7 +26,6 @@ public class ScriptExecutionGlobalListener implements ScriptExecutionListener {
     public void onSuccess(ScriptExecution execution, Object result) {
         onFinish(execution);
 
-        EventBus.getDefault().post(new ScriptEvent(execution));
 
     }
 
@@ -36,6 +35,7 @@ public class ScriptExecutionGlobalListener implements ScriptExecutionListener {
             return;
         double seconds = (System.currentTimeMillis() - millis) / 1000.0;
         AutoJs.getInstance().getScriptEngineService().getGlobalConsole().verbose(GlobalAppContext.getString(R.string.text_execution_finished), execution.getSource().toString(), seconds);
+        EventBus.getDefault().post(new ScriptEvent(execution));
 
     }
 
@@ -43,7 +43,6 @@ public class ScriptExecutionGlobalListener implements ScriptExecutionListener {
     public void onException(ScriptExecution execution, Exception e) {
         onFinish(execution);
         Log.e("aaa","------>onException"+e.getMessage());
-        EventBus.getDefault().post(new ScriptEvent(execution,e));
 
     }
 

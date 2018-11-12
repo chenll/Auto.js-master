@@ -45,7 +45,7 @@ if(result.code != 0){
 
 var task = com.stardust.auojs.inrt.AppAutoMgr.getCurrentTask();
 //打开app
-if (!app.launch(pName)) {
+if (!app.launchApp(appName)) {
     toast("[" + appName + "]打开失败,请检查你是否安装");
     exit();
 }
@@ -253,31 +253,25 @@ function executeTask(textView) {
     }
     //跳过广告
     var guangg = parent.findByText("广告");
-    if (guangg != null && guangg.size() != 0) {
-        //        toast("发现广告，直接跳过");
-        android.util.Log.e("aaa", "跳过广告");
+    if (guangg != null && guangg.size()!= 0) {
+        android.util.Log.e("bbb", "跳过广告");
         timeRetry = new Date().getTime();
-
         return false;
     }
     //跳过下载
     var xiazai = parent.findByText("下载");
     if (xiazai != null && xiazai.size() != 0) {
-        //        toast("发现广告，直接跳过");
-        android.util.Log.e("aaa", "跳过下载");
-             timeRetry = new Date().getTime();
-
+        android.util.Log.e("bbb", "跳过下载");
+        timeRetry = new Date().getTime();
         return false;
     }
     var titleStr = textView.text();
     if (com.stardust.datebase.greenDao.GreenDaoManger.isInserted(pName, titleStr)) {
-        //        toast("已经点过了，直接跳过");
-        android.util.Log.e("aaa", "跳过已读");
-                timeRetry = new Date().getTime();
-
+        android.util.Log.e("bbb", "跳过已读");
+        timeRetry = new Date().getTime();
         return false;
     }
-    if (click(titleStr)) {
+    if (titleStr!=null&&titleStr!=""&&click(titleStr)) {
         android.util.Log.e("aaa", titleStr+"");
         com.stardust.datebase.greenDao.GreenDaoManger.insert(pName, titleStr);
         for (var i = 0; i < task.getSingleSlideTimes(); i++) {

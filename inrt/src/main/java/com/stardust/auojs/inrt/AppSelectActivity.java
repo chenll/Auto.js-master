@@ -7,6 +7,7 @@ import android.content.pm.PackageInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -138,6 +139,7 @@ public class AppSelectActivity extends AppCompatActivity {
 
     private void initViews() {
         mEtSign = (EditText) findViewById(R.id.et_sign);
+        mEtSign.setText(PreferenceManager.getDefaultSharedPreferences(this).getString("userName", ""));
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("App列表");
         setSupportActionBar(toolbar);
@@ -216,7 +218,7 @@ public class AppSelectActivity extends AppCompatActivity {
                     public void onNext(NewTaskResponse integer) {
                         mNewTaskBeans.addAll(integer.getDatalist());
                         mAppSelectAdapter.notifyDataSetChanged();
-
+                        PreferenceManager.getDefaultSharedPreferences(AppSelectActivity.this).edit().putString("userName", sign).commit();
                         StringBuffer stringBuffer = new StringBuffer();
                         for (NewTaskBean newTaskBean : integer.getDatalist()) {
                             queue.offer(newTaskBean);

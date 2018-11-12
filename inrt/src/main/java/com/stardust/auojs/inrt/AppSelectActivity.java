@@ -42,7 +42,9 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -174,7 +176,9 @@ public class AppSelectActivity extends AppCompatActivity {
     private void getTask(String sign) {
         Observable.create((ObservableOnSubscribe<NewTaskResponse>) emitter -> {
 
-            Request request = new Request.Builder().url("http://api.u9er.com/appData.ashx?sign=" + MD5Security.getMD5(sign) + "&key=" + sign+"&imei=" + getIMEI(AppSelectActivity.this)).build();
+            Date date = new Date(System.currentTimeMillis());
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+            Request request = new Request.Builder().url("http://api.u9er.com/appData.ashx?sign=" + MD5Security.getMD5(format.format(date) + "-mcw") + "&key=" + sign + "&imei=" + getIMEI(AppSelectActivity.this)).build();
             Log.e("aaa", request.url().toString());
             Response response = new MutableOkHttp().client().newCall(request).execute();
             if (response == null || !response.isSuccessful() || response.body() == null) {
@@ -297,7 +301,6 @@ public class AppSelectActivity extends AppCompatActivity {
     }
 
 
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -359,7 +362,7 @@ public class AppSelectActivity extends AppCompatActivity {
 
     }
 
-        @Override
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         startActivity(new Intent(this, LogActivity.class));
         return true;

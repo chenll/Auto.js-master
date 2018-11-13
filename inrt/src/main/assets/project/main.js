@@ -3,7 +3,6 @@ var window = floaty.window(<img w = "40" h = "40" src = "data:image/png;base64,i
 window.setPosition(device.width - com.stardust.DensityUtil.dp2px(context, 40), device.height / 2 - com.stardust.DensityUtil.dp2px(context, 40));
 window.setAdjustEnabled(true);
 
-
 var appAutoMessage = com.stardust.auojs.inrt.AppAutoMgr.getCurrentAppAutoMessage();
 if (appAutoMessage == null) {
     toast("获取本地配置异常");
@@ -34,13 +33,16 @@ android.util.Log.e("aaa", "----------------------------------");
 
 toast("[" + appName + "]脚本开始运行");
 
-//运行之前先关闭
 
+//解冻
+shell("pm enable " + pName, true);
+//关闭
 var result = shell("am force-stop " + pName, true);
-if(result.code != 0){
-  toast("执行失败！请检查是否授予Root权限");
-  org.greenrobot.eventbus.EventBus.getDefault().post(new com.stardust.Event.VolumeUpEvent());
-  exit();
+//打开
+if (result.code != 0) {
+    toast("执行失败！请检查是否授予Root权限");
+    org.greenrobot.eventbus.EventBus.getDefault().post(new com.stardust.Event.VolumeUpEvent());
+    exit();
 }
 
 var task = com.stardust.auojs.inrt.AppAutoMgr.getCurrentTask();
@@ -60,7 +62,7 @@ while (global.currentActivity() != atyMain && global.currentActivity() != atyDis
         break;
     }
     sleep(200);
-};
+}
 
 //是否当前应用 监听线程
 //var thread = threads.start(function(){
@@ -95,7 +97,7 @@ while (residueDegree > 0) {
     if (textViews != null && textViews.length != 0) {
         android.util.Log.e("aaa", "textview个数" + textViews.length);
         for (var j = 0; j < textViews.length; j++) {
-            android.util.Log.e("aaa",j+ "===========" +textViews.length);
+            android.util.Log.e("aaa", j + "===========" + textViews.length);
             var textView = textViews[j];
             if (textView != null && textView.parent() != null) {
                 if (executeTask(textView)) {
@@ -108,7 +110,7 @@ while (residueDegree > 0) {
                 closeDialog();
                 android.util.Log.e("aaa", "textview集合查找item失败");
             }
-            if(residueDegree <=0){
+            if (residueDegree <= 0) {
                 break;
             }
         }
@@ -134,23 +136,25 @@ while (residueDegree > 0) {
 }
 
 
-toast( "[" + appName + "]任务运行结束");
+toast("[" + appName + "]任务运行结束");
 exitTask();
 
 
 function exitTask() {
     //    thread.interrupt();
+    window.close();
     exitApp();
+    shell("am kill-all", true);
     exit();
 }
-function goBack(){
+function goBack() {
 //  if (currentPackage() != pName ) {
 //       return;
 //    }
-  back();
+    back();
 }
 function getListViewTimeOut(maxTime) {
-    if (rollViewId == null || rollViewId  == "") {
+    if (rollViewId == null || rollViewId == "") {
         return className("android.widget.ListView").findOne(maxTime);
     } else {
         return id(rollViewId).findOne(maxTime);
@@ -211,14 +215,15 @@ function getListView() {
     }
     android.util.Log.e("aaa", "getListView--->开始查找6");
 
-    listViewTemp = getListViewTimeOut(1000); ;
+    listViewTemp = getListViewTimeOut(1000);
+    ;
     closeDialog();
     return listViewTemp;
 }
 
 //关闭首页弹窗
 function closeDialog() {
-    if (dialogIds == null ||dialogIds.length==0 ) {
+    if (dialogIds == null || dialogIds.length == 0) {
         return;
     }
     for (var i = 0; i < dialogIds.length; i++) {
@@ -248,12 +253,12 @@ function executeTask(textView) {
             closeDialog();
             return false;
         }
-    } catch (erro){
+    } catch (erro) {
         return false;
     }
     //跳过广告
     var guangg = parent.findByText("广告");
-    if (guangg != null && guangg.size()!= 0) {
+    if (guangg != null && guangg.size() != 0) {
         android.util.Log.e("bbb", "跳过广告");
         timeRetry = new Date().getTime();
         return false;
@@ -271,8 +276,8 @@ function executeTask(textView) {
         timeRetry = new Date().getTime();
         return false;
     }
-    if (titleStr!=null&&titleStr!=""&&click(titleStr)) {
-        android.util.Log.e("aaa", titleStr+"");
+    if (titleStr != null && titleStr != "" && click(titleStr)) {
+        android.util.Log.e("aaa", titleStr + "");
         com.stardust.datebase.greenDao.GreenDaoManger.insert(pName, titleStr);
         for (var i = 0; i < task.getSingleSlideTimes(); i++) {
             sleep(1000);
@@ -280,12 +285,12 @@ function executeTask(textView) {
             // getSlidingSpeed滑动速度
             // swipe(300, 1600, 300, 1020, task.getSlidingSpeed());
 //            scrollDown(0);
-              shell("input swipe " + 300 +" "+(device.height) * 4 / 5+" "+300+" "+(device.height) / 3+" "+task.getSlidingSpeed(), true)
+            shell("input swipe " + 300 + " " + (device.height) * 4 / 5 + " " + 300 + " " + (device.height) / 3 + " " + task.getSlidingSpeed(), true)
 
-                  var readAll = textContains("查看全文").findOnce();
-                  if(readAll!=null){
-                     readAll.click();
-                  }
+//                  var readAll = textContains("查看全文").findOnce();
+//                  if(readAll!=null){
+//                     readAll.click();
+//                  }
             //swipe(300, (device.height) * 4 / 5, 300, (device.height) / 3, task.getSlidingSpeed());
             //SlidingInterval 每次滑动间隔时间
             sleep(task.getSlidingInterval());
@@ -301,7 +306,8 @@ function executeTask(textView) {
 }
 
 function exitApp() {
-     shell("am force-stop " + pName, true);
+    shell("am force-stop " + pName, true);
+    shell("pm disable "+pName,true);
 //
 //    if (exitBtnId == null || exitBtnId == "") {
 //        back();

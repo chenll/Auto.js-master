@@ -144,7 +144,6 @@ function exitTask() {
     //    thread.interrupt();
     window.close();
     exitApp();
-    shell("am kill-all", true);
     exit();
 }
 function goBack() {
@@ -307,7 +306,7 @@ function executeTask(textView) {
 
 function exitApp() {
     shell("am force-stop " + pName, true);
-    shell("pm disable "+pName,true);
+//    shell("pm disable "+pName,true);
 //
 //    if (exitBtnId == null || exitBtnId == "") {
 //        back();

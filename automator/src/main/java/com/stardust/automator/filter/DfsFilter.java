@@ -34,16 +34,21 @@ public abstract class DfsFilter implements ListFilter, Filter {
 
     private void filterChildren(UiObject parent, List<UiObject> list) {
         for (int i = 0; i < parent.getChildCount(); i++) {
-            UiObject child = parent.child(i);
-            if (child == null)
-                continue;
-            boolean included = isIncluded(child);
-            if (included) {
-                list.add(child);
-            }
-            filterChildren(child, list);
-            if (!included) {
-                child.recycle();
+            try {
+                UiObject child = parent.child(i);
+                if (child == null)
+                    continue;
+                boolean included = isIncluded(child);
+                if (included) {
+                    list.add(child);
+                }
+                filterChildren(child, list);
+                if (!included) {
+                    child.recycle();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                break ;
             }
         }
     }

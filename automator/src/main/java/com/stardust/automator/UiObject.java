@@ -1,7 +1,6 @@
 package com.stardust.automator;
 
 import android.graphics.Rect;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -11,7 +10,6 @@ import android.view.accessibility.AccessibilityNodeInfo;
 
 import com.stardust.view.accessibility.AccessibilityNodeInfoAllocator;
 import com.stardust.view.accessibility.AccessibilityNodeInfoHelper;
-import com.stardust.view.accessibility.AccessibilityService;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -77,6 +75,7 @@ public class UiObject extends AccessibilityNodeInfoCompat {
     @Nullable
     public UiObject parent() {
         try {
+
             AccessibilityNodeInfoCompat parent = super.getParent();
             if (parent == null)
                 return null;
@@ -94,7 +93,7 @@ public class UiObject extends AccessibilityNodeInfoCompat {
             if (child == null)
                 return null;
             return new UiObject(child.getInfo(), mDepth + 1, i);
-        } catch (IllegalStateException e) {
+        } catch (Exception e) {
             // FIXME: 2017/5/5
             return null;
         }

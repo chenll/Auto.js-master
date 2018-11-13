@@ -231,12 +231,18 @@ function closeDialog() {
 }
 
 function closeDialogByid(viewId) {
-    var imgClose = id(viewId).findOnce();
-    if (imgClose != null) {
-        sleep(600);
-        imgClose.click();
-        sleep(600);
+
+    try{
+        var imgClose = id(viewId).findOnce();
+        if (imgClose != null) {
+            sleep(600);
+            imgClose.click();
+            sleep(600);
+        }
+    }catch(erro){
+                android.util.Log.e("aaa",  "===========" + erro);
     }
+
 }
 
 

@@ -22,7 +22,7 @@
         <item></item>
         <item>com.yanhui.qktx:id/tv_title</item>
         <item>com.yanhui.qktx:id/rv_news</item>
-        <item></item>
+        <item>com.yanhui.qktx:id/bt_open_push_cancle</item>
     </string-array>
 
 

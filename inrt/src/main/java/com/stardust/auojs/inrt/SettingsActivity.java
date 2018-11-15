@@ -30,7 +30,7 @@ public class SettingsActivity extends AppCompatActivity {
         toolbar.setTitle(R.string.text_settings);
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(v -> finish());
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     public static class PreferenceFragment extends android.preference.PreferenceFragment {

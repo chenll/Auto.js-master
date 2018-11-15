@@ -31,8 +31,6 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        int flags = WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED;
-        getWindow().addFlags(flags);
         setContentView(R.layout.activity_splash);
         RxPermissions rxPermission = new RxPermissions(SplashActivity.this);
         Disposable disposable = rxPermission.request(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE)

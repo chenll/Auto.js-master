@@ -127,6 +127,7 @@ public class AppSelectActivity extends AppCompatActivity {
                 queue.clear();
                 for (NewTaskBean newTaskBean : mNewTaskBeans) {
                     newTaskBean.setExecuted(false);
+                    App.getApplication().getDaoSession().getNewTaskBeanDao().update(newTaskBean);
                     queue.offer(newTaskBean);
                 }
                 mAppSelectAdapter.notifyDataSetChanged();
@@ -350,7 +351,7 @@ public class AppSelectActivity extends AppCompatActivity {
                 if (newTaskBean.getF_PackageName().equals(taskBean.getF_PackageName())) {
                     newTaskBean.setExecuted(true);
                     newTaskBean.setExecutedSussed(event.getException() == null);
-                    App.getApplication().getDaoSession().getNewTaskBeanDao(). update(newTaskBean);
+                    App.getApplication().getDaoSession().getNewTaskBeanDao().update(newTaskBean);
                 }
             }
             mAppSelectAdapter.notifyDataSetChanged();

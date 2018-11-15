@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.qmuiteam.qmui.widget.dialog.QMUIDialog;
+import com.qmuiteam.qmui.widget.dialog.QMUIDialogAction;
 import com.qmuiteam.qmui.widget.dialog.QMUITipDialog;
 import com.stardust.Event.ScriptEvent;
 import com.stardust.Event.VolumeUpEvent;
@@ -34,6 +35,8 @@ import com.stardust.auojs.inrt.bean.NewTaskBean;
 import com.stardust.auojs.inrt.bean.NewTaskResponse;
 import com.stardust.auojs.inrt.launch.GlobalProjectLauncher;
 import com.stardust.autojs.core.http.MutableOkHttp;
+import com.stardust.datebase.greenDao.GreenDaoManger;
+import com.stardust.datebase.greenDao.NewTaskBeanDao;
 import com.stardust.utils.FuctionUtils;
 import com.stardust.view.accessibility.AccessibilityService;
 
@@ -55,11 +58,13 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.Request;
@@ -81,6 +86,7 @@ public class AppSelectActivity extends AppCompatActivity {
 
 
     private Queue<NewTaskBean> queue = new LinkedList<NewTaskBean>();
+    private Disposable mdDisposable;
 
 
     @Override
@@ -91,18 +97,6 @@ public class AppSelectActivity extends AppCompatActivity {
             EventBus.getDefault().register(this);
         }
         initViews();
-        mAppSelectAdapter.setOnItemClickListener((adapter, view, position) -> {
-            if (1 == 1) {
-                return;
-            }
-            if (!checkAccessibility()) {
-                return;
-            }
-            if (!checkDrawOverlays()) {
-                return;
-            }
-
-        });
         findViewById(R.id.btn_test).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -140,6 +134,39 @@ public class AppSelectActivity extends AppCompatActivity {
                 runTask();
             }
         });
+        if (initTask(null)) {
+            QMUIDialog.MessageDialogBuilder messageDialogBuilder = new QMUIDialog.MessageDialogBuilder(AppSelectActivity.this).setTitle("提示").setCancelable(false).setCanceledOnTouchOutside(false).setMessage("系统发现您有任务尚未执行完毕,")
+                    .addAction("取消", new QMUIDialogAction.ActionListener() {
+                        @Override
+                        public void onClick(QMUIDialog dialog, int index) {
+                            dialog.dismiss();
+                            if (mdDisposable != null && !mdDisposable.isDisposed()) {
+                                mdDisposable.isDisposed();
+                            }
+                        }
+                    });
+            QMUIDialog qmuiDialog = messageDialogBuilder.show();
+
+            mdDisposable = Flowable.intervalRange(0, 5, 0, 1, TimeUnit.SECONDS)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnNext(new Consumer<Long>() {
+                        @Override
+                        public void accept(Long aLong) throws Exception {
+                            messageDialogBuilder.getTextView().setText("系统发现您有任务尚未执行完毕!\n" + (5 - aLong) + "秒后将自动开始执行");
+                        }
+                    }).doOnComplete(new Action() {
+                        @Override
+                        public void run() throws Exception {
+                            //倒计时完毕置为可点击状态
+                            if (qmuiDialog != null && qmuiDialog.isShowing()) {
+                                qmuiDialog.dismiss();
+                                runTask();
+                            }
+                        }
+                    }).subscribe();
+
+
+        }
 
 
     }
@@ -188,12 +215,6 @@ public class AppSelectActivity extends AppCompatActivity {
 
             Date date = new Date(System.currentTimeMillis());
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-//            F_Imei
-//                    F_PhoneMode
-//            F_PhoneType
-//                    F_AndroidVersion
-//            F_SystemVersion
-//                    F_RAM
             Request request = new Request.Builder().url("http://api.u9er.com/appData.ashx?sign=" + MD5Security.getMD5(format.format(date) + "-mcw") +
                     "&key=" + sign +
                     "&imei=" + getIMEI(AppSelectActivity.this) +
@@ -231,30 +252,12 @@ public class AppSelectActivity extends AppCompatActivity {
                     @Override
                     public void onSubscribe(Disposable d) {
                         tipDialog.show();
-
                     }
 
                     @Override
                     public void onNext(NewTaskResponse integer) {
-                        mNewTaskBeans.addAll(integer.getDatalist());
-                        mAppSelectAdapter.notifyDataSetChanged();
                         PreferenceManager.getDefaultSharedPreferences(AppSelectActivity.this).edit().putString("userName", sign).commit();
-                        StringBuffer stringBuffer = new StringBuffer();
-                        for (NewTaskBean newTaskBean : integer.getDatalist()) {
-                            queue.offer(newTaskBean);
-                            stringBuffer.append(newTaskBean.getF_AppName());
-                            if (newTaskBean != integer.getDatalist().get(integer.getDatalist().size() - 1)) {
-                                stringBuffer.append("\n");
-                            }
-                        }
-
-//                        new QMUIDialog.MessageDialogBuilder(AppSelectActivity.this).setTitle("任务列表").setMessage(stringBuffer.toString())
-//                                .addAction("开始执行", (dialog, index) -> {
-//                                    dialog.dismiss();
-//                                    mLogs.clear();
-//                                    mRvLogAdapter.notifyDataSetChanged();
-//                                    runTask();
-//                                }).addAction("取消", (dialog, index) -> dialog.dismiss()).show();
+                        initTask(integer);
 
 
                     }
@@ -274,6 +277,38 @@ public class AppSelectActivity extends AppCompatActivity {
 
     }
 
+    private boolean initTask(NewTaskResponse newTaskResponse) {
+        boolean isFromeNet = true;
+        List<NewTaskBean> newTaskBeanList = null;
+        if (newTaskResponse == null) {
+            isFromeNet = false;
+            newTaskBeanList = App.getApplication().getDaoSession().getNewTaskBeanDao().queryBuilder().orderAsc(NewTaskBeanDao.Properties.Sort).list();
+        } else {
+            isFromeNet = true;
+            newTaskBeanList = newTaskResponse.getDatalist();
+            App.getApplication().getDaoSession().getNewTaskBeanDao().deleteAll();
+        }
+        if (newTaskBeanList == null || newTaskBeanList.isEmpty()) {
+            return false;
+        }
+        //刷页面
+        mNewTaskBeans.addAll(newTaskBeanList);
+        mAppSelectAdapter.notifyDataSetChanged();
+        boolean isLastOneUmExtrted = false;
+        for (int i = 0; i < newTaskBeanList.size(); i++) {
+            NewTaskBean newTaskBean = newTaskBeanList.get(i);
+            if (!newTaskBean.isExecuted()) {
+                isLastOneUmExtrted = true;
+                queue.offer(newTaskBean);
+            }
+            if (isFromeNet) {
+                newTaskBean.setSort(i);
+                App.getApplication().getDaoSession().getNewTaskBeanDao().insert(newTaskBean);
+            }
+        }
+        return isLastOneUmExtrted;
+
+    }
 
     private void addLog(String str) {
         mLogs.add(str);
@@ -315,6 +350,7 @@ public class AppSelectActivity extends AppCompatActivity {
                 if (newTaskBean.getF_PackageName().equals(taskBean.getF_PackageName())) {
                     newTaskBean.setExecuted(true);
                     newTaskBean.setExecutedSussed(event.getException() == null);
+                    App.getApplication().getDaoSession().getNewTaskBeanDao(). update(newTaskBean);
                 }
             }
             mAppSelectAdapter.notifyDataSetChanged();

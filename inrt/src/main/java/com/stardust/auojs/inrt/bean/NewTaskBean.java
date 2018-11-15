@@ -1,5 +1,11 @@
 package com.stardust.auojs.inrt.bean;
 
+import org.greenrobot.greendao.annotation.Entity;
+import org.greenrobot.greendao.annotation.Generated;
+import org.greenrobot.greendao.annotation.Id;
+import org.greenrobot.greendao.annotation.Unique;
+
+@Entity
 public class NewTaskBean {
 
 
@@ -14,6 +20,7 @@ public class NewTaskBean {
      * slidingInterval : 3000
      */
 
+    @Id
     private String f_PackageName;
     private String f_AppName;
     private String f_AppVersion;
@@ -22,11 +29,40 @@ public class NewTaskBean {
     private int waitForTime;
     private int singleSlideTimes;
     private int slidingInterval;
-
-
-
     private boolean isExecuted = false;
-    private boolean isExecutedSussed ;
+    private boolean isExecutedSussed;
+
+    public int getSort() {
+        return sort;
+    }
+
+    public void setSort(int sort) {
+        this.sort = sort;
+    }
+
+    private int sort;
+
+    @Generated(hash = 896789543)
+    public NewTaskBean(String f_PackageName, String f_AppName, String f_AppVersion,
+            int totalNumber, int slidingSpeed, int waitForTime,
+            int singleSlideTimes, int slidingInterval, boolean isExecuted,
+            boolean isExecutedSussed, int sort) {
+        this.f_PackageName = f_PackageName;
+        this.f_AppName = f_AppName;
+        this.f_AppVersion = f_AppVersion;
+        this.totalNumber = totalNumber;
+        this.slidingSpeed = slidingSpeed;
+        this.waitForTime = waitForTime;
+        this.singleSlideTimes = singleSlideTimes;
+        this.slidingInterval = slidingInterval;
+        this.isExecuted = isExecuted;
+        this.isExecutedSussed = isExecutedSussed;
+        this.sort = sort;
+    }
+
+    @Generated(hash = 1787269383)
+    public NewTaskBean() {
+    }
 
     public String getF_PackageName() {
         return f_PackageName;
@@ -91,6 +127,7 @@ public class NewTaskBean {
     public void setSlidingInterval(int slidingInterval) {
         this.slidingInterval = slidingInterval;
     }
+
     public boolean isExecuted() {
         return isExecuted;
     }
@@ -105,5 +142,21 @@ public class NewTaskBean {
 
     public void setExecutedSussed(boolean executedSussed) {
         isExecutedSussed = executedSussed;
+    }
+
+    public boolean getIsExecuted() {
+        return this.isExecuted;
+    }
+
+    public void setIsExecuted(boolean isExecuted) {
+        this.isExecuted = isExecuted;
+    }
+
+    public boolean getIsExecutedSussed() {
+        return this.isExecutedSussed;
+    }
+
+    public void setIsExecutedSussed(boolean isExecutedSussed) {
+        this.isExecutedSussed = isExecutedSussed;
     }
 }

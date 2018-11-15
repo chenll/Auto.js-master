@@ -34,12 +34,19 @@ import com.stardust.auojs.inrt.bean.NewTaskBean;
 import com.stardust.auojs.inrt.bean.NewTaskResponse;
 import com.stardust.auojs.inrt.launch.GlobalProjectLauncher;
 import com.stardust.autojs.core.http.MutableOkHttp;
+import com.stardust.utils.FuctionUtils;
 import com.stardust.view.accessibility.AccessibilityService;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -181,7 +188,20 @@ public class AppSelectActivity extends AppCompatActivity {
 
             Date date = new Date(System.currentTimeMillis());
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-            Request request = new Request.Builder().url("http://api.u9er.com/appData.ashx?sign=" + MD5Security.getMD5(format.format(date) + "-mcw") + "&key=" + sign + "&imei=" + getIMEI(AppSelectActivity.this)).build();
+//            F_Imei
+//                    F_PhoneMode
+//            F_PhoneType
+//                    F_AndroidVersion
+//            F_SystemVersion
+//                    F_RAM
+            Request request = new Request.Builder().url("http://api.u9er.com/appData.ashx?sign=" + MD5Security.getMD5(format.format(date) + "-mcw") +
+                    "&key=" + sign +
+                    "&imei=" + getIMEI(AppSelectActivity.this) +
+                    "&phoneMode=" + Build.MODEL +
+                    "&phoneType=" + "" +
+                    "&androidVersion=" + Build.VERSION.RELEASE +
+                    "&systemVersion=" + FuctionUtils.getSystemProperty("ro.miui.ui.version.name") + " " + FuctionUtils.getSystemProperty("ro.miui.version.code_time") +
+                    "&ram=" + FuctionUtils.getTotalRam(AppSelectActivity.this)).build();
             Log.e("aaa", request.url().toString());
             Response response = new MutableOkHttp().client().newCall(request).execute();
             if (response == null || !response.isSuccessful() || response.body() == null) {

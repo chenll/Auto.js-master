@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
+import android.view.WindowManager;
 
 import com.stardust.auojs.inrt.launch.GlobalProjectLauncher;
 import com.tbruyelle.rxpermissions2.RxPermissions;
@@ -30,6 +31,8 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        int flags = WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED;
+        getWindow().addFlags(flags);
         setContentView(R.layout.activity_splash);
         RxPermissions rxPermission = new RxPermissions(SplashActivity.this);
         Disposable disposable = rxPermission.request(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE)

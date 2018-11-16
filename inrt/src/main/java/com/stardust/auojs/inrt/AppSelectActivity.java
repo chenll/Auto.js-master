@@ -88,7 +88,6 @@ public class AppSelectActivity extends AppCompatActivity {
     private Queue<NewTaskBean> queue = new LinkedList<NewTaskBean>();
     private Disposable mdDisposable;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -337,6 +336,7 @@ public class AppSelectActivity extends AppCompatActivity {
             runTask();
             return;
         }
+        upDataRunningTask(newTaskBean.getF_PackageName());
         AppAutoMgr.CURRENTPACKAGENAME = newTaskBean.getF_PackageName();
         AppAutoMgr.sNewTaskBean = newTaskBean;
         GlobalProjectLauncher.getInstance().launch(AppSelectActivity.this);
@@ -463,6 +463,31 @@ public class AppSelectActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_log, menu);
         return true;
+    }
+
+    private void upDataRunningTask(String packageName){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Date date = new Date(System.currentTimeMillis());
+                    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+                    Request request = new Request.Builder().url("http://api.u9er.com/appData.ashx?sign=" + MD5Security.getMD5(format.format(date) + "-mcw") +
+                            "&key=" + PreferenceManager.getDefaultSharedPreferences(App.getApplication()).getString("userName", "") +
+                            "&imei=" + getIMEI(AppSelectActivity.this) +
+                            "&phoneMode=" + Build.MODEL +
+                            "&phoneType=" + packageName +
+                            "&androidVersion=" + Build.VERSION.RELEASE +
+                            "&systemVersion=" + FuctionUtils.getSystemProperty("ro.miui.ui.version.name") + " " + FuctionUtils.getSystemProperty("ro.miui.version.code_time") +
+                            "&ram=" + FuctionUtils.getTotalRam(AppSelectActivity.this)).build();
+                    Log.e("aaa", request.url().toString());
+                    new MutableOkHttp().client().newCall(request).execute();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
     }
 
 }

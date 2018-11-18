@@ -23,7 +23,7 @@ public class AppSelectAdapter extends BaseQuickAdapter<NewTaskBean, BaseViewHold
     @Override
     protected void convert(BaseViewHolder helper, NewTaskBean item) {
         CardView cardView = helper.getView(R.id.cardview);
-        cardView.setCardBackgroundColor(Color.parseColor(item.isExecuted()?(item.isExecutedSussed()?"#D1EEEE":"#D1EEEE"):"#FFFFFF") );
+        cardView.setCardBackgroundColor(Color.parseColor(item.isExecuted()?(item.isExecutedSussed()?"#D1EEEE":"#FFFF00"):"#FFFFFF") );
         PackageInfo packageInfo = AppUtils.getPackageInfo(App.getApplication(), item.getF_PackageName());
         helper.setText(R.id.tv_app_name, item.getF_AppName()).setText(R.id.tv_app_packagename, item.getF_PackageName());
         helper.setText(R.id.tv_support_version, "支持版本:" + item.getF_AppVersion());

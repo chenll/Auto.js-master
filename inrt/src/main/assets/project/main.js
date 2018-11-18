@@ -102,6 +102,7 @@ while (residueDegree > 0) {
             if (textView != null && textView.parent() != null) {
                 if (executeTask(textView)) {
                     residueDegree--;
+                    org.greenrobot.eventbus.EventBus.getDefault().post(new com.stardust.Event.TaskRunningEvent(pName,residueDegree));
                     timeRetry = new Date().getTime();
                 } else {
                     android.util.Log.e("aaa", "点击失败");
@@ -215,7 +216,6 @@ function getListView() {
     android.util.Log.e("aaa", "getListView--->开始查找6");
 
     listViewTemp = getListViewTimeOut(1000);
-    ;
     closeDialog();
     return listViewTemp;
 }

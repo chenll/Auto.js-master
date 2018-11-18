@@ -3,7 +3,6 @@ package com.stardust.auojs.inrt.bean;
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.annotation.Id;
-import org.greenrobot.greendao.annotation.Unique;
 
 @Entity
 public class NewTaskBean {
@@ -32,13 +31,7 @@ public class NewTaskBean {
     private boolean isExecuted = false;
     private boolean isExecutedSussed;
 
-    public int getSort() {
-        return sort;
-    }
 
-    public void setSort(int sort) {
-        this.sort = sort;
-    }
 
     private int sort;
 
@@ -158,5 +151,12 @@ public class NewTaskBean {
 
     public void setIsExecutedSussed(boolean isExecutedSussed) {
         this.isExecutedSussed = isExecutedSussed;
+    }
+    public int getSort() {
+        return sort;
+    }
+
+    public void setSort(int sort) {
+        this.sort = sort;
     }
 }

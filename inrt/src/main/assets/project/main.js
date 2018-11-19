@@ -123,9 +123,9 @@ while (residueDegree > 0) {
             } else {
                 //            scrollDown(1);
                 if (pName == "cn.weli.story") {
-                    shell("input swipe " + 300 + " " + (device.height) * 2 / 3 + " " + 300 + " " + (device.height) / 5 + " " + task.getSlidingSpeed(), true);
+                    shell("input swipe " + 300 + " " + (device.height) * 2 / 3 + " " + 300 + " " + (device.height) / 5 + " " + getSwipeTimes(), true);
                 } else {
-                    shell("input swipe " + 300 + " " + (device.height) * 4 / 5 + " " + 300 + " " + (device.height) / 4 + " " + task.getSlidingSpeed(), true);
+                    shell("input swipe " + 300 + " " + (device.height) * 4 / 5 + " " + 300 + " " + (device.height) / 4 + " " + getSwipeTimes(), true);
                 }
             }
             //        swipe(300, (device.height) * 4 / 5, 300, (device.height) / 4, task.getSlidingSpeed());
@@ -290,7 +290,7 @@ function executeTask(textView) {
             // getSlidingSpeed滑动速度
             // swipe(300, 1600, 300, 1020, task.getSlidingSpeed());
 //            scrollDown(0);
-            shell("input swipe " + 300 + " " + (device.height) * 4 / 5 + " " + 300 + " " + (device.height) / 3 + " " + task.getSlidingSpeed(), true)
+            shell("input swipe " + 300 + " " + (device.height) * 4 / 5 + " " + 300 + " " + (device.height) / 3 + " " + getSwipeTimes(), true)
 
 //                  var readAll = textContains("查看全文").findOnce();
 //                  if(readAll!=null){
@@ -298,9 +298,9 @@ function executeTask(textView) {
 //                  }
             //swipe(300, (device.height) * 4 / 5, 300, (device.height) / 3, task.getSlidingSpeed());
             //SlidingInterval 每次滑动间隔时间
-            sleep(task.getSlidingInterval());
+            sleep(getSlidingIntervalTimes());
         }
-        sleep(task.getWaitForTime());
+        sleep(getWaitTimes());
         closeDialog();
         goBack();
         sleep(1000);
@@ -308,6 +308,18 @@ function executeTask(textView) {
     }
     return false;
 
+}
+
+function getSlidingIntervalTimes(){
+   return random(task.getSlidingInterval()/2, task.getSlidingInterval());
+}
+
+function getWaitTimes(){
+   return random(task.getWaitForTime()/2, task.getWaitForTime());
+}
+
+function getSwipeTimes(){
+   return random(task.getSlidingSpeed()/2, task.getSlidingSpeed());
 }
 
 function exitApp() {

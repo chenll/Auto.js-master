@@ -84,6 +84,7 @@ public class AppSelectActivity extends AppCompatActivity {
     private Disposable mdDisposable;
     private boolean isFromeNet;
     private Toolbar mToolbar;
+    private boolean isStopFromePower = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -329,15 +330,21 @@ public class AppSelectActivity extends AppCompatActivity {
     }
 
     private void runTask() {
+        if (AccessibilityService.getInstance() == null) {
+            return;
+        }
+//        if (!checkDrawOverlays()) {
+//            return;
+//        }
         if (GlobalProjectLauncher.getInstance().isRunning()) {
             return;
         }
 
         NewTaskBeanById taskBean = null;
 
-        if (AppAutoMgr.sNewTaskBean != null) {
+        if (AppAutoMgr.sNewTaskBean != null && !isStopFromePower) {
             int reTryTimes = PreferenceManager.getDefaultSharedPreferences(AppSelectActivity.this).getInt("retry_times", 0);
-            if (reTryTimes < 2) {
+            if (reTryTimes < 3) {
                 NewTaskBeanById newTaskBeanInDb = App.getApplication().getDaoSession().getNewTaskBeanByIdDao().queryBuilder().where(NewTaskBeanByIdDao.Properties.F_Id.eq(AppAutoMgr.sNewTaskBean.getF_Id())).unique();
                 if (!newTaskBeanInDb.isExecutedSussed()) {
                     taskBean = AppAutoMgr.sNewTaskBean;
@@ -346,6 +353,7 @@ public class AppSelectActivity extends AppCompatActivity {
             }
 
         }
+        isStopFromePower = false;
         if (taskBean == null) {
             taskBean = queue.poll();
             PreferenceManager.getDefaultSharedPreferences(AppSelectActivity.this).edit().putInt("retry_times", 0).commit();
@@ -417,6 +425,7 @@ public class AppSelectActivity extends AppCompatActivity {
     public void onVolumeUp(VolumeUpEvent event) {
         queue.clear();
         isStarted = false;
+        isStopFromePower = true;
     }
 
 

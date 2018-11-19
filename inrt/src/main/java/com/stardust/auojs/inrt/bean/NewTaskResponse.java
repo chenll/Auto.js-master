@@ -5,7 +5,18 @@ import java.util.List;
 public class NewTaskResponse {
     private String code;
     private String msg;
-    private List<NewTaskBean> datalist;
+
+
+    private String imeiId;
+    private List<NewTaskBeanById> datalist;
+
+    public String getImeiId() {
+        return imeiId;
+    }
+
+    public void setImeiId(String imeiId) {
+        this.imeiId = imeiId;
+    }
 
     public String getCode() {
         return code;
@@ -23,11 +34,11 @@ public class NewTaskResponse {
         this.msg = msg;
     }
 
-    public List<NewTaskBean> getDatalist() {
+    public List<NewTaskBeanById> getDatalist() {
         return datalist;
     }
 
-    public void setDatalist(List<NewTaskBean> datalist) {
+    public void setDatalist(List<NewTaskBeanById> datalist) {
         this.datalist = datalist;
     }
 }

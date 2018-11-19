@@ -9,19 +9,19 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.stardust.auojs.inrt.App;
 import com.stardust.auojs.inrt.R;
-import com.stardust.auojs.inrt.bean.NewTaskBean;
+import com.stardust.auojs.inrt.bean.NewTaskBeanById;
 import com.stardust.utils.AppUtils;
 
 import java.util.List;
 
-public class AppSelectAdapter extends BaseQuickAdapter<NewTaskBean, BaseViewHolder> {
+public class AppSelectAdapter extends BaseQuickAdapter<NewTaskBeanById, BaseViewHolder> {
 
-    public AppSelectAdapter(int layoutResId, @Nullable List<NewTaskBean> data) {
+    public AppSelectAdapter(int layoutResId, @Nullable List<NewTaskBeanById> data) {
         super(layoutResId, data);
     }
 
     @Override
-    protected void convert(BaseViewHolder helper, NewTaskBean item) {
+    protected void convert(BaseViewHolder helper, NewTaskBeanById item) {
         CardView cardView = helper.getView(R.id.cardview);
         cardView.setCardBackgroundColor(Color.parseColor(item.isExecuted()?(item.isExecutedSussed()?"#D1EEEE":"#FFFF00"):"#FFFFFF") );
         PackageInfo packageInfo = AppUtils.getPackageInfo(App.getApplication(), item.getF_PackageName());

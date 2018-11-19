@@ -32,11 +32,12 @@ import com.stardust.Event.TaskRunningEvent;
 import com.stardust.Event.VolumeUpEvent;
 import com.stardust.auojs.inrt.adapter.AppSelectAdapter;
 import com.stardust.auojs.inrt.adapter.RvLogAdapter;
-import com.stardust.auojs.inrt.bean.NewTaskBean;
+import com.stardust.auojs.inrt.bean.NewTaskBeanById;
 import com.stardust.auojs.inrt.bean.NewTaskResponse;
 import com.stardust.auojs.inrt.launch.GlobalProjectLauncher;
 import com.stardust.autojs.core.http.MutableOkHttp;
-import com.stardust.datebase.greenDao.NewTaskBeanDao;
+
+import com.stardust.datebase.greenDao.NewTaskBeanByIdDao;
 import com.stardust.utils.FuctionUtils;
 import com.stardust.view.accessibility.AccessibilityService;
 
@@ -68,7 +69,7 @@ import okhttp3.Response;
 public class AppSelectActivity extends AppCompatActivity {
     private RecyclerView mRecyclerView;
     private AppSelectAdapter mAppSelectAdapter;
-    private List<NewTaskBean> mNewTaskBeans;
+    private List<NewTaskBeanById> mNewTaskBeans;
     private RecyclerView mRvLog;
     private RvLogAdapter mRvLogAdapter;
     private List<String> mLogs;
@@ -79,9 +80,10 @@ public class AppSelectActivity extends AppCompatActivity {
     private boolean isStarted;
 
 
-    private Queue<NewTaskBean> queue = new LinkedList<NewTaskBean>();
+    private Queue<NewTaskBeanById> queue = new LinkedList<NewTaskBeanById>();
     private Disposable mdDisposable;
     private boolean isFromeNet;
+    private Toolbar mToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,9 +125,9 @@ public class AppSelectActivity extends AppCompatActivity {
                     return;
                 }
                 queue.clear();
-                for (NewTaskBean newTaskBean : mNewTaskBeans) {
+                for (NewTaskBeanById newTaskBean : mNewTaskBeans) {
                     newTaskBean.setExecuted(false);
-                    App.getApplication().getDaoSession().getNewTaskBeanDao().update(newTaskBean);
+                    App.getApplication().getDaoSession().getNewTaskBeanByIdDao().update(newTaskBean);
                     queue.offer(newTaskBean);
                 }
                 mAppSelectAdapter.notifyDataSetChanged();
@@ -173,9 +175,9 @@ public class AppSelectActivity extends AppCompatActivity {
     private void initViews() {
         mEtSign = (EditText) findViewById(R.id.et_sign);
         mEtSign.setText(PreferenceManager.getDefaultSharedPreferences(this).getString("userName", ""));
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle("App列表");
-        setSupportActionBar(toolbar);
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        mToolbar.setTitle("自动任务-" + PreferenceManager.getDefaultSharedPreferences(this).getString("imeiId", ""));
+        setSupportActionBar(mToolbar);
 
 //        ConsoleView consoleView = (ConsoleView) findViewById(R.id.console);
 //        consoleView.setConsole((StardustConsole) AutoJs.getInstance().getGlobalConsole());
@@ -232,14 +234,26 @@ public class AppSelectActivity extends AppCompatActivity {
                 Gson gson = new Gson();
                 NewTaskResponse taskBean = gson.fromJson(response.body().string(), NewTaskResponse.class);
 //                NewTaskResponse taskBean = gson.fromJson("{\"code\":\"0000\",\"msg\":\"ok\",\"datalist\":[{\"f_PackageName\":\"com.kuaima.browser\",\"f_AppName\":\"快马小报\",\"f_AppVersion\":\"1.7.3\",\"totalNumber\":5,\"slidingSpeed\":3000,\"waitForTime\":5000,\"singleSlideTimes\":3,\"slidingInterval\":3000}]}", NewTaskResponse.class);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            mToolbar.setTitle("自动任务-" + taskBean.getImeiId());
+                            PreferenceManager.getDefaultSharedPreferences(AppSelectActivity.this).edit().putString("imeiId", taskBean.getImeiId()).commit();
+                        } catch (Exception e) {
+                            mToolbar.setTitle("自动任务");
+                        }
+
+                    }
+                });
                 if (taskBean == null) {
                     emitter.onError(new RuntimeException("任务获取失败,请稍后再试."));
-
                 } else if (taskBean.getDatalist() == null || taskBean.getDatalist().isEmpty()) {
                     emitter.onError(new RuntimeException(TextUtils.isEmpty(taskBean.getMsg()) ? "暂无任务,请稍后再试" : taskBean.getMsg()));
                 } else {
                     emitter.onNext(taskBean);
                 }
+
             } catch (Exception e) {
                 emitter.onError(e);
             }
@@ -276,14 +290,14 @@ public class AppSelectActivity extends AppCompatActivity {
     }
 
     private boolean initTask(NewTaskResponse newTaskResponse) {
-        List<NewTaskBean> newTaskBeanList = null;
+        List<NewTaskBeanById> newTaskBeanList = null;
         if (newTaskResponse == null) {
             isFromeNet = false;
-            newTaskBeanList = App.getApplication().getDaoSession().getNewTaskBeanDao().queryBuilder().orderAsc(NewTaskBeanDao.Properties.Sort).list();
+            newTaskBeanList = App.getApplication().getDaoSession().getNewTaskBeanByIdDao().queryBuilder().orderAsc(NewTaskBeanByIdDao.Properties.Sort).list();
         } else {
             isFromeNet = true;
             newTaskBeanList = newTaskResponse.getDatalist();
-            App.getApplication().getDaoSession().getNewTaskBeanDao().deleteAll();
+            App.getApplication().getDaoSession().getNewTaskBeanByIdDao().deleteAll();
         }
 
         if (newTaskBeanList == null || newTaskBeanList.isEmpty()) {
@@ -294,7 +308,7 @@ public class AppSelectActivity extends AppCompatActivity {
         mAppSelectAdapter.notifyDataSetChanged();
         boolean isLastOneUmExtrted = false;
         for (int i = 0; i < newTaskBeanList.size(); i++) {
-            NewTaskBean newTaskBean = newTaskBeanList.get(i);
+            NewTaskBeanById newTaskBean = newTaskBeanList.get(i);
             if (!newTaskBean.isExecuted() || !newTaskBean.isExecutedSussed()) {
                 isLastOneUmExtrted = true;
                 Log.e("aaa", newTaskBean.getF_AppName());
@@ -302,7 +316,7 @@ public class AppSelectActivity extends AppCompatActivity {
             }
             if (isFromeNet) {
                 newTaskBean.setSort(i);
-                App.getApplication().getDaoSession().getNewTaskBeanDao().insert(newTaskBean);
+                App.getApplication().getDaoSession().getNewTaskBeanByIdDao().insert(newTaskBean);
             }
         }
         return isLastOneUmExtrted;
@@ -318,7 +332,25 @@ public class AppSelectActivity extends AppCompatActivity {
         if (GlobalProjectLauncher.getInstance().isRunning()) {
             return;
         }
-        NewTaskBean taskBean = queue.poll();
+
+        NewTaskBeanById taskBean = null;
+
+        if (AppAutoMgr.sNewTaskBean != null) {
+            int reTryTimes = PreferenceManager.getDefaultSharedPreferences(AppSelectActivity.this).getInt("retry_times", 0);
+            if (reTryTimes < 2) {
+                NewTaskBeanById newTaskBeanInDb = App.getApplication().getDaoSession().getNewTaskBeanByIdDao().queryBuilder().where(NewTaskBeanByIdDao.Properties.F_Id.eq(AppAutoMgr.sNewTaskBean.getF_Id())).unique();
+                if (!newTaskBeanInDb.isExecutedSussed()) {
+                    taskBean = AppAutoMgr.sNewTaskBean;
+                    PreferenceManager.getDefaultSharedPreferences(AppSelectActivity.this).edit().putInt("retry_times", reTryTimes + 1).commit();
+                }
+            }
+
+        }
+        if (taskBean == null) {
+            taskBean = queue.poll();
+            PreferenceManager.getDefaultSharedPreferences(AppSelectActivity.this).edit().putInt("retry_times", 0).commit();
+
+        }
         if (taskBean == null) {
             addLog("任务全部执行结束");
             isStarted = false;
@@ -346,39 +378,34 @@ public class AppSelectActivity extends AppCompatActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onTaskRunningEvent(TaskRunningEvent event) {
-        for (NewTaskBean newTaskBean : mNewTaskBeans) {
-            if (newTaskBean.getF_PackageName().equals(event.getPackageName())) {
-                if (mGson == null) {
-                    mGson = new Gson();
-                }
-                NewTaskBean newTaskBean1 = mGson.fromJson(mGson.toJson(newTaskBean), NewTaskBean.class);
-                newTaskBean1.setTotalNumber(event.getSurplusTimes());
-                newTaskBean1.setIsExecutedSussed(event.getSurplusTimes() == 0);
-                App.getApplication().getDaoSession().getNewTaskBeanDao().update(newTaskBean1);
-                Log.e("aaa", newTaskBean.getF_AppName() + "剩余次数" + event.getSurplusTimes());
-                break;
-            }
-
-        }
-
-
+        AppAutoMgr.upDateCurrentTask(event.getSurplusTimes());
+//        for (NewTaskBeanById newTaskBean : mNewTaskBeans) {
+//            if (newTaskBean.getF_PackageName().equals(event.getPackageName())) {
+//                if (mGson == null) {
+//                    mGson = new Gson();
+//                }
+//                NewTaskBeanById newTaskBean1 = mGson.fromJson(mGson.toJson(newTaskBean), NewTaskBeanById.class);
+//                newTaskBean1.setTotalNumber(event.getSurplusTimes());
+//                newTaskBean1.setIsExecutedSussed(event.getSurplusTimes() == 0);
+//                App.getApplication().getDaoSession().getNewTaskBeanDao().update(newTaskBean1);
+//                Log.e("aaa", newTaskBean.getF_AppName() + "剩余次数" + event.getSurplusTimes());
+//                break;
+//            }
+//
+//        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onScriptEvent(ScriptEvent event) {
-        NewTaskBean taskBean = AppAutoMgr.sNewTaskBean;
+        NewTaskBeanById taskBean = AppAutoMgr.sNewTaskBean;
         if (taskBean != null) {
             addLog("[" + taskBean.getF_AppName() + "]执行完成");
-            for (NewTaskBean newTaskBean : mNewTaskBeans) {
-                if (newTaskBean.getF_PackageName().equals(taskBean.getF_PackageName())) {
-                    NewTaskBean newTaskBeanInDb = App.getApplication().getDaoSession().getNewTaskBeanDao().queryBuilder().where(NewTaskBeanDao.Properties.F_PackageName.eq(taskBean.getF_PackageName())).unique();
+            for (NewTaskBeanById newTaskBean : mNewTaskBeans) {
+                if (newTaskBean.getF_Id().equals(taskBean.getF_Id())) {
+                    AppAutoMgr.onCurrentTaskExecuted();
                     newTaskBean.setExecuted(true);
-                    newTaskBean.setExecutedSussed(newTaskBeanInDb == null ? true : newTaskBeanInDb.getTotalNumber() == 0);
-
-
-                    newTaskBeanInDb.setExecuted(true);
-                    newTaskBeanInDb.setExecutedSussed(newTaskBeanInDb == null ? true : newTaskBeanInDb.getTotalNumber() == 0);
-                    App.getApplication().getDaoSession().getNewTaskBeanDao().update(newTaskBeanInDb);
+                    newTaskBean.setExecutedSussed(AppAutoMgr.sNewTaskBean == null ? true : AppAutoMgr.sNewTaskBean.getTotalNumber() == 0);
+                    break;
                 }
             }
             mAppSelectAdapter.notifyDataSetChanged();

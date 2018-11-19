@@ -25,10 +25,9 @@ import com.stardust.auojs.inrt.AppAutoMgr;
 import com.stardust.auojs.inrt.LogActivity;
 import com.stardust.auojs.inrt.MD5Security;
 import com.stardust.auojs.inrt.R;
-import com.stardust.auojs.inrt.adapter.AppSelectAdapter;
 import com.stardust.auojs.inrt.adapter.RvLogAdapter;
 import com.stardust.auojs.inrt.bean.AppBean;
-import com.stardust.auojs.inrt.bean.NewTaskBean;
+import com.stardust.auojs.inrt.bean.NewTaskBeanById;
 import com.stardust.auojs.inrt.bean.NewTaskResponse;
 import com.stardust.auojs.inrt.launch.GlobalProjectLauncher;
 import com.stardust.autojs.core.http.MutableOkHttp;
@@ -64,7 +63,7 @@ public class AppSelectActivityCopy extends AppCompatActivity {
     private QMUITipDialog tipDialog;
     private EditText mEtSign;
 
-    Queue<NewTaskBean> queue = new LinkedList<NewTaskBean>();
+    Queue<NewTaskBeanById> queue = new LinkedList<NewTaskBeanById>();
 
 
     @Override
@@ -182,7 +181,7 @@ public class AppSelectActivityCopy extends AppCompatActivity {
                     public void onNext(NewTaskResponse integer) {
 
                         StringBuffer stringBuffer = new StringBuffer();
-                        for (NewTaskBean newTaskBean : integer.getDatalist()) {
+                        for (NewTaskBeanById newTaskBean : integer.getDatalist()) {
                             queue.offer(newTaskBean);
                             stringBuffer.append(newTaskBean.getF_AppName());
                             if (newTaskBean != integer.getDatalist().get(integer.getDatalist().size() - 1)) {
@@ -239,7 +238,7 @@ public class AppSelectActivityCopy extends AppCompatActivity {
     }
 
     private void runTask() {
-        NewTaskBean newTaskBean = queue.poll();
+        NewTaskBeanById newTaskBean = queue.poll();
         if (newTaskBean == null) {
             addLog("任务全部执行结束");
             return;
@@ -262,7 +261,7 @@ public class AppSelectActivityCopy extends AppCompatActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onScriptEvent(ScriptEvent event) {
-        NewTaskBean taskBean = AppAutoMgr.sNewTaskBean;
+        NewTaskBeanById taskBean = AppAutoMgr.sNewTaskBean;
         if (taskBean != null) {
             addLog("[" + taskBean.getF_AppName() + "]执行完成");
         }

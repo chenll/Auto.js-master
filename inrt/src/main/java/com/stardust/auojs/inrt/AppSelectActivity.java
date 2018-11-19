@@ -361,6 +361,7 @@ public class AppSelectActivity extends AppCompatActivity {
         }
         if (taskBean == null) {
             addLog("任务全部执行结束");
+            AppAutoMgr.sNewTaskBean = null;
             isStarted = false;
             return;
         }
@@ -406,18 +407,22 @@ public class AppSelectActivity extends AppCompatActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onScriptEvent(ScriptEvent event) {
         NewTaskBeanById taskBean = AppAutoMgr.sNewTaskBean;
-        if (taskBean != null) {
-            addLog("[" + taskBean.getF_AppName() + "]执行完成");
-            for (NewTaskBeanById newTaskBean : mNewTaskBeans) {
-                if (newTaskBean.getF_Id().equals(taskBean.getF_Id())) {
-                    AppAutoMgr.onCurrentTaskExecuted();
-                    newTaskBean.setExecuted(true);
-                    newTaskBean.setExecutedSussed(AppAutoMgr.sNewTaskBean == null ? true : AppAutoMgr.sNewTaskBean.getTotalNumber() == 0);
-                    break;
-                }
-            }
-            mAppSelectAdapter.notifyDataSetChanged();
+        if (taskBean == null) {
+            runTask();
+            return;
+
         }
+        addLog("[" + taskBean.getF_AppName() + "]执行完成");
+        for (NewTaskBeanById newTaskBean : mNewTaskBeans) {
+            if (newTaskBean.getF_Id().equals(taskBean.getF_Id())) {
+                AppAutoMgr.onCurrentTaskExecuted();
+                newTaskBean.setExecuted(true);
+                newTaskBean.setExecutedSussed(AppAutoMgr.sNewTaskBean == null ? true : AppAutoMgr.sNewTaskBean.getTotalNumber() == 0);
+                break;
+            }
+        }
+        mAppSelectAdapter.notifyDataSetChanged();
+
         runTask();
     }
 
@@ -426,6 +431,7 @@ public class AppSelectActivity extends AppCompatActivity {
         queue.clear();
         isStarted = false;
         isStopFromePower = true;
+        AppAutoMgr.sNewTaskBean = null;
     }
 
 

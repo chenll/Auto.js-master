@@ -24,6 +24,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.qmuiteam.qmui.widget.dialog.QMUIDialog;
 import com.qmuiteam.qmui.widget.dialog.QMUIDialogAction;
 import com.qmuiteam.qmui.widget.dialog.QMUITipDialog;
@@ -233,7 +234,9 @@ public class AppSelectActivity extends AppCompatActivity {
             }
             try {
                 Gson gson = new Gson();
-                NewTaskResponse taskBean = gson.fromJson(response.body().string(), NewTaskResponse.class);
+                String responseStr = response.body().string();
+
+                NewTaskResponse taskBean = gson.fromJson(responseStr, NewTaskResponse.class);
 //                NewTaskResponse taskBean = gson.fromJson("{\"code\":\"0000\",\"msg\":\"ok\",\"datalist\":[{\"f_PackageName\":\"com.kuaima.browser\",\"f_AppName\":\"快马小报\",\"f_AppVersion\":\"1.7.3\",\"totalNumber\":5,\"slidingSpeed\":3000,\"waitForTime\":5000,\"singleSlideTimes\":3,\"slidingInterval\":3000}]}", NewTaskResponse.class);
                 runOnUiThread(new Runnable() {
                     @Override
@@ -253,6 +256,8 @@ public class AppSelectActivity extends AppCompatActivity {
                     emitter.onError(new RuntimeException(TextUtils.isEmpty(taskBean.getMsg()) ? "暂无任务,请稍后再试" : taskBean.getMsg()));
                 } else {
                     emitter.onNext(taskBean);
+                    PreferenceManager.getDefaultSharedPreferences(AppSelectActivity.this).edit().putString("taskJson", responseStr).commit();
+
                 }
 
             } catch (Exception e) {
@@ -329,6 +334,41 @@ public class AppSelectActivity extends AppCompatActivity {
         mRvLogAdapter.notifyDataSetChanged();
     }
 
+    //执行完一轮之后再次执行
+    private void reStarTask() {
+
+        String cacheTask = PreferenceManager.getDefaultSharedPreferences(AppSelectActivity.this).getString("taskJson", "");
+        if (TextUtils.isEmpty(cacheTask)) {
+            return;
+        }
+        try {
+            NewTaskResponse taskBean = new Gson().fromJson(cacheTask, NewTaskResponse.class);
+            if (taskBean == null) {
+                return;
+            }
+            mNewTaskBeans.clear();
+            mAppSelectAdapter.notifyDataSetChanged();
+            initTask(taskBean);
+        } catch (Exception e) {
+            return;
+        }
+
+
+        if (mNewTaskBeans == null || mNewTaskBeans.isEmpty()) {
+            return;
+        }
+        queue.clear();
+        for (NewTaskBeanById newTaskBean : mNewTaskBeans) {
+            newTaskBean.setExecuted(false);
+            App.getApplication().getDaoSession().getNewTaskBeanByIdDao().update(newTaskBean);
+            queue.offer(newTaskBean);
+        }
+        mAppSelectAdapter.notifyDataSetChanged();
+        isStarted = true;
+        Toast.makeText(AppSelectActivity.this, "新轮次开始...", Toast.LENGTH_SHORT).show();
+        runTask();
+    }
+
     private void runTask() {
         if (AccessibilityService.getInstance() == null) {
             return;
@@ -353,7 +393,6 @@ public class AppSelectActivity extends AppCompatActivity {
             }
 
         }
-        isStopFromePower = false;
         if (taskBean == null) {
             taskBean = queue.poll();
             PreferenceManager.getDefaultSharedPreferences(AppSelectActivity.this).edit().putInt("retry_times", 0).commit();
@@ -363,8 +402,14 @@ public class AppSelectActivity extends AppCompatActivity {
             addLog("任务全部执行结束");
             AppAutoMgr.sNewTaskBean = null;
             isStarted = false;
+            if (!isStopFromePower) {
+                reStarTask();
+            }
+            isStopFromePower = false;
             return;
         }
+        isStopFromePower = false;
+
         PackageInfo packageInfo = com.stardust.utils.AppUtils.getPackageInfo(AppSelectActivity.this, taskBean.getF_PackageName());
         if (packageInfo == null) {
             addLog("[" + taskBean.getF_AppName() + "]未安装");
@@ -407,7 +452,7 @@ public class AppSelectActivity extends AppCompatActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onScriptEvent(ScriptEvent event) {
         NewTaskBeanById taskBean = AppAutoMgr.sNewTaskBean;
-        if (taskBean == null) {
+        if (taskBean == null && !isStopFromePower) {
             runTask();
             return;
 
@@ -422,8 +467,11 @@ public class AppSelectActivity extends AppCompatActivity {
             }
         }
         mAppSelectAdapter.notifyDataSetChanged();
-
-        runTask();
+        if (!isStopFromePower) {
+            runTask();
+        } else {
+            AppAutoMgr.sNewTaskBean = null;
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -431,7 +479,6 @@ public class AppSelectActivity extends AppCompatActivity {
         queue.clear();
         isStarted = false;
         isStopFromePower = true;
-        AppAutoMgr.sNewTaskBean = null;
     }
 
 

@@ -75,7 +75,7 @@
         <item></item>
         <item>com.sogou.todayread:id/news_title</item>
         <item>com.sogou.todayread:id/news_listview</item>
-        <item>com.sogou.todayread:id/red_packet_close_btn|com.sogou.todayread:id/effective_close_btn</item>
+        <item>com.sogou.todayread:id/red_packet_close_btn|com.sogou.todayread:id/effective_close_btn|com.sogou.todayread:id/bonus_dlg_close_btn</item>
     </string-array>
 
 

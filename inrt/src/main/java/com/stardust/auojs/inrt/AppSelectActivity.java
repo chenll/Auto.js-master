@@ -218,7 +218,8 @@ public class AppSelectActivity extends AppCompatActivity {
 
             Date date = new Date(System.currentTimeMillis());
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-            Request request = new Request.Builder().url("http://api.u9er.com/appData.ashx?sign=" + MD5Security.getMD5(format.format(date) + "-mcw") +
+//            Request request = new Request.Builder().url("http://api.u9er.com/appData.ashx?sign=" + MD5Security.getMD5(format.format(date) + "-mcw") +
+            Request request = new Request.Builder().url("http://jhapi.u9er.com/UserKey.ashx?sign=" + MD5Security.getMD5(format.format(date) + "-mcw") +
                     "&key=" + sign +
                     "&imei=" + getIMEI(AppSelectActivity.this) +
                     "&phoneMode=" + Build.MODEL +
@@ -588,7 +589,8 @@ public class AppSelectActivity extends AppCompatActivity {
                 try {
                     Date date = new Date(System.currentTimeMillis());
                     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-                    Request request = new Request.Builder().url("http://api.u9er.com/appData.ashx?sign=" + MD5Security.getMD5(format.format(date) + "-mcw") +
+//                    Request request = new Request.Builder().url("http://jhapi.u9er.com/UserKey.ashx?sign=" + MD5Security.getMD5(format.format(date) + "-mcw") +
+                    Request request = new Request.Builder().url("http://jhapi.u9er.com/UpdatePoints.ashx?sign=" + MD5Security.getMD5(format.format(date) + "-mcw") +
                             "&key=" + PreferenceManager.getDefaultSharedPreferences(App.getApplication()).getString("userName", "") +
                             "&imei=" + getIMEI(AppSelectActivity.this) +
                             "&phoneMode=" + Build.MODEL +

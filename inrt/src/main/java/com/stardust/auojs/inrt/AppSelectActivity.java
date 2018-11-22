@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -179,6 +180,16 @@ public class AppSelectActivity extends AppCompatActivity {
         mEtSign.setText(PreferenceManager.getDefaultSharedPreferences(this).getString("userName", ""));
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         mToolbar.setTitle("自动任务-" + PreferenceManager.getDefaultSharedPreferences(this).getString("imeiId", ""));
+
+        try {
+            // 获取packagemanager的实例
+            PackageManager packageManager = getPackageManager();
+            // getPackageName()是你当前类的包名，0代表是获取版本信息
+            PackageInfo packInfo = packageManager.getPackageInfo(getPackageName(), 0);
+            mToolbar.setSubtitle("V" + packInfo.versionName);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
         setSupportActionBar(mToolbar);
 
 //        ConsoleView consoleView = (ConsoleView) findViewById(R.id.console);
@@ -247,6 +258,7 @@ public class AppSelectActivity extends AppCompatActivity {
                             PreferenceManager.getDefaultSharedPreferences(AppSelectActivity.this).edit().putString("imeiId", taskBean.getImeiId()).commit();
                         } catch (Exception e) {
                             mToolbar.setTitle("自动任务");
+
                         }
 
                     }

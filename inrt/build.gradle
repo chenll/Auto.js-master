@@ -10,7 +10,7 @@ android {
         minSdkVersion 17
         targetSdkVersion 23
         versionCode 203
-        versionName "4.0.0 Beta"
+        versionName "4.0.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         ndk {
             abiFilters 'armeabi-v7a'

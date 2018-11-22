@@ -15,7 +15,11 @@
         <item>51</item>
     </string-array>
 
-
+    <!--名称-->
+    <!--主Activity-->
+    <!--点击文字 id-->
+    <!--list id-->
+    <!--关闭按钮 id-->
     <string-array name="com.yanhui.qktx">
         <item>趣看天下</item>
         <item>com.yanhui.qktx.activity.MainActivity</item>
@@ -107,7 +111,7 @@
     </string-array>
 
 
-
+    <!--不支持了-->
     <string-array name="cn.weli.story">
         <item>微鲤看看</item>
         <item>com.etouch.ecalendar.MainActivity</item>
@@ -119,6 +123,7 @@
 
 
 
+    <!--不支持了-->
     <string-array name="com.kuaima.browser">
         <item>快马小报</item>
         <item>com.kuaima.browser.module.MainActivity</item>
@@ -129,6 +134,7 @@
     </string-array>
 
 
+    <!--不支持了-->
     <string-array name="com.weikuai.wknews">
         <item>值得看看</item>
         <item>com.weikuai.wknews.ui.activity.MainActivity</item>
@@ -136,5 +142,15 @@
         <item>com.weikuai.wknews:id/new_title</item>
         <item></item>
         <item>com.weikuai.wknews:id/iv_close</item>
+    </string-array>
+
+
+    <string-array name="com.jifen.qukan">
+        <item>趣头条</item>
+        <item>com.jifen.qukan.main.MainActivity</item>
+        <item></item>
+        <item>com.jifen.qukan:id/z0</item>
+        <item>com.jifen.qukan:id/nt</item>
+        <item>com.jifen.qukan:id/a4y|com.jifen.qukan:id/sw|com.jifen.qukan:id/ql</item>
     </string-array>
 </resources>

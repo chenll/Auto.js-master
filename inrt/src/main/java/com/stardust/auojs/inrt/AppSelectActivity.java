@@ -72,9 +72,6 @@ public class AppSelectActivity extends AppCompatActivity {
     private RecyclerView mRecyclerView;
     private AppSelectAdapter mAppSelectAdapter;
     private List<NewTaskBeanById> mNewTaskBeans;
-    private RecyclerView mRvLog;
-    private RvLogAdapter mRvLogAdapter;
-    private List<String> mLogs;
 
     private QMUITipDialog tipDialog;
     private EditText mEtSign;
@@ -179,12 +176,13 @@ public class AppSelectActivity extends AppCompatActivity {
         mEtSign = (EditText) findViewById(R.id.et_sign);
         mEtSign.setText(PreferenceManager.getDefaultSharedPreferences(this).getString("userName", ""));
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        mToolbar.setTitle("自动任务-" + PreferenceManager.getDefaultSharedPreferences(this).getString("imeiId", ""));
-
+        if (!TextUtils.isEmpty(PreferenceManager.getDefaultSharedPreferences(this).getString("imeiId", ""))) {
+            mToolbar.setTitle(PreferenceManager.getDefaultSharedPreferences(this).getString("imeiId", ""));
+        } else {
+            mToolbar.setTitle("自动任务");
+        }
         try {
-            // 获取packagemanager的实例
             PackageManager packageManager = getPackageManager();
-            // getPackageName()是你当前类的包名，0代表是获取版本信息
             PackageInfo packInfo = packageManager.getPackageInfo(getPackageName(), 0);
             mToolbar.setSubtitle("V" + packInfo.versionName);
         } catch (PackageManager.NameNotFoundException e) {
@@ -197,13 +195,6 @@ public class AppSelectActivity extends AppCompatActivity {
 //        consoleView.findViewById(R.id.input_container).setVisibility(View.GONE);
 //
 
-        mRvLog = (RecyclerView) findViewById(R.id.rv_log);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        mRvLog.setLayoutManager(linearLayoutManager);
-        mLogs = new ArrayList<>();
-        mRvLogAdapter = new RvLogAdapter(R.layout.itme_log, mLogs);
-        mRvLog.setAdapter(mRvLogAdapter);
 
 
         mRecyclerView = (RecyclerView) findViewById(R.id.rv_apps);
@@ -214,10 +205,7 @@ public class AppSelectActivity extends AppCompatActivity {
         mRecyclerView.setAdapter(mAppSelectAdapter);
 
 
-        tipDialog = new QMUITipDialog.Builder(AppSelectActivity.this)
-                .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
-                .setTipWord("正在加载数据，请稍等...")
-                .create();
+        tipDialog = new QMUITipDialog.Builder(AppSelectActivity.this).setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING).setTipWord("正在加载数据，请稍等...").create();
     }
 
     @Override
@@ -254,7 +242,7 @@ public class AppSelectActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         try {
-                            mToolbar.setTitle("自动任务-" + taskBean.getImeiId());
+                            mToolbar.setTitle(taskBean.getImeiId());
                             PreferenceManager.getDefaultSharedPreferences(AppSelectActivity.this).edit().putString("imeiId", taskBean.getImeiId()).commit();
                         } catch (Exception e) {
                             mToolbar.setTitle("自动任务");
@@ -342,10 +330,7 @@ public class AppSelectActivity extends AppCompatActivity {
 
     }
 
-    private void addLog(String str) {
-        mLogs.add(str);
-        mRvLogAdapter.notifyDataSetChanged();
-    }
+
 
     //执行完一轮之后再次执行
     private void reStarTask() {
@@ -412,7 +397,6 @@ public class AppSelectActivity extends AppCompatActivity {
 
         }
         if (taskBean == null) {
-            addLog("任务全部执行结束");
             AppAutoMgr.sNewTaskBean = null;
             isStarted = false;
             if (!isStopFromePower) {
@@ -425,12 +409,10 @@ public class AppSelectActivity extends AppCompatActivity {
 
         PackageInfo packageInfo = com.stardust.utils.AppUtils.getPackageInfo(AppSelectActivity.this, taskBean.getF_PackageName());
         if (packageInfo == null) {
-            addLog("[" + taskBean.getF_AppName() + "]未安装");
             runTask();
             return;
         }
         if (!taskBean.getF_AppVersion().equals(packageInfo.versionName)) {
-            addLog("暂不支持[" + taskBean.getF_AppName() + "]" + packageInfo.versionName + "版本不对");
             runTask();
             return;
         }
@@ -445,6 +427,7 @@ public class AppSelectActivity extends AppCompatActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onTaskRunningEvent(TaskRunningEvent event) {
+        Log.e("ccc", "onTaskRunningEvent---->" + event.getPackageName() + "剩余次数" + event.getSurplusTimes());
         AppAutoMgr.upDateCurrentTask(event.getSurplusTimes());
 //        for (NewTaskBeanById newTaskBean : mNewTaskBeans) {
 //            if (newTaskBean.getF_PackageName().equals(event.getPackageName())) {
@@ -464,13 +447,13 @@ public class AppSelectActivity extends AppCompatActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onScriptEvent(ScriptEvent event) {
+        Log.e("ccc", "onScriptEvent---->");
         NewTaskBeanById taskBean = AppAutoMgr.sNewTaskBean;
         if (taskBean == null && !isStopFromePower) {
             runTask();
             return;
 
         }
-        addLog("[" + taskBean.getF_AppName() + "]执行完成");
         for (NewTaskBeanById newTaskBean : mNewTaskBeans) {
             if (newTaskBean.getF_Id().equals(taskBean.getF_Id())) {
                 AppAutoMgr.onCurrentTaskExecuted();
@@ -489,6 +472,7 @@ public class AppSelectActivity extends AppCompatActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onVolumeUp(VolumeUpEvent event) {
+        Log.e("ccc", "onVolumeUp---->");
         queue.clear();
         isStarted = false;
         isStopFromePower = true;

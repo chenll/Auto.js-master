@@ -619,6 +619,10 @@ public class AppSelectActivity extends AppCompatActivity {
     }
 
     private void checkUpdate() {
+        if (System.currentTimeMillis() - PreferenceManager.getDefaultSharedPreferences(AppSelectActivity.this).getLong("lastUpdataTime", 0l) < 1000 * 60 * 5) {
+            return;
+        }
+        PreferenceManager.getDefaultSharedPreferences(AppSelectActivity.this).edit().putLong("lastUpdataTime", System.currentTimeMillis()).commit();
         if (versionCode == -1) {
             try {
                 PackageInfo packageInfo = AppSelectActivity.this.getApplicationContext().getPackageManager().getPackageInfo(AppSelectActivity.this.getPackageName(), 0);
@@ -674,8 +678,8 @@ public class AppSelectActivity extends AppCompatActivity {
                                     String md5 = MD5Security.getFileMD5(new File(task.getTargetFilePath()));
                                     Log.e("aaa", "开始安装" + md5);
                                     if (!TextUtils.isEmpty(md5) && md5.equals(apkmd5)) {
-                                        Log.e("aaa", "开始安装");
-                                        FuctionUtils.clientInstall(task.getTargetFilePath());
+                                    Log.e("aaa", "开始安装");
+                                    FuctionUtils.clientInstall(task.getTargetFilePath());
                                     }
                                 }
                             }).start();

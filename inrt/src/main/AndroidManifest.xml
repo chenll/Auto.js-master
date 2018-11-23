@@ -3,7 +3,6 @@
           xmlns:tools="http://schemas.android.com/tools"
           package="com.stardust.auojs.inrt">
 
-
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
     <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
@@ -13,6 +12,8 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
+
 
 
     <!-- 非Auto.js运行必需，不会主动申请，某些脚本可以自行申请-->
@@ -38,10 +39,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:noHistory="true"
-        tools:replace="android:label, android:allowBackup">
-        <activity android:name=".LogActivity" android:screenOrientation="portrait">
-
-        </activity>
+        tools:replace="android:label, android:allowBackup"
+        tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".LogActivity" android:screenOrientation="portrait"/>
         <activity
             android:name=".AppSelectActivity"
             android:theme="@style/aty_qmui"
@@ -91,7 +91,6 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED"></action>
             </intent-filter>
         </receiver>
-
 
     </application>
 

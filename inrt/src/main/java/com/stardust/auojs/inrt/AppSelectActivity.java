@@ -8,11 +8,11 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.telephony.TelephonyManager;
@@ -25,7 +25,9 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
+import com.liulishuo.filedownloader.BaseDownloadTask;
+import com.liulishuo.filedownloader.FileDownloadSampleListener;
+import com.liulishuo.filedownloader.FileDownloader;
 import com.qmuiteam.qmui.widget.dialog.QMUIDialog;
 import com.qmuiteam.qmui.widget.dialog.QMUIDialogAction;
 import com.qmuiteam.qmui.widget.dialog.QMUITipDialog;
@@ -33,12 +35,10 @@ import com.stardust.Event.ScriptEvent;
 import com.stardust.Event.TaskRunningEvent;
 import com.stardust.Event.VolumeUpEvent;
 import com.stardust.auojs.inrt.adapter.AppSelectAdapter;
-import com.stardust.auojs.inrt.adapter.RvLogAdapter;
 import com.stardust.auojs.inrt.bean.NewTaskBeanById;
 import com.stardust.auojs.inrt.bean.NewTaskResponse;
 import com.stardust.auojs.inrt.launch.GlobalProjectLauncher;
 import com.stardust.autojs.core.http.MutableOkHttp;
-
 import com.stardust.datebase.greenDao.NewTaskBeanByIdDao;
 import com.stardust.utils.FuctionUtils;
 import com.stardust.view.accessibility.AccessibilityService;
@@ -46,7 +46,10 @@ import com.stardust.view.accessibility.AccessibilityService;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.json.JSONObject;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -84,15 +87,20 @@ public class AppSelectActivity extends AppCompatActivity {
     private boolean isFromeNet;
     private Toolbar mToolbar;
     private boolean isStopFromePower = false;
+    private int versionCode = -1;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_appselect);
+
         if (!EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().register(this);
         }
         initViews();
+
+
         findViewById(R.id.btn_test).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -194,7 +202,6 @@ public class AppSelectActivity extends AppCompatActivity {
 //        consoleView.setConsole((StardustConsole) AutoJs.getInstance().getGlobalConsole());
 //        consoleView.findViewById(R.id.input_container).setVisibility(View.GONE);
 //
-
 
 
         mRecyclerView = (RecyclerView) findViewById(R.id.rv_apps);
@@ -329,7 +336,6 @@ public class AppSelectActivity extends AppCompatActivity {
         return isLastOneUmExtrted;
 
     }
-
 
 
     //执行完一轮之后再次执行
@@ -492,6 +498,14 @@ public class AppSelectActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        //安装辅助工具
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                FuctionUtils.installHelperApk(App.getApplication());
+                checkUpdate();
+            }
+        }).start();
         if (!isStarted) {
             return;
         }
@@ -603,5 +617,77 @@ public class AppSelectActivity extends AppCompatActivity {
         }).start();
 
     }
+
+    private void checkUpdate() {
+        if (versionCode == -1) {
+            try {
+                PackageInfo packageInfo = AppSelectActivity.this.getApplicationContext().getPackageManager().getPackageInfo(AppSelectActivity.this.getPackageName(), 0);
+                versionCode = packageInfo.versionCode;
+            } catch (PackageManager.NameNotFoundException e) {
+                versionCode = -1;
+            }
+        }
+        if (versionCode == -1) {
+            return;
+        }
+        Date date = new Date(System.currentTimeMillis());
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        Request request = new Request.Builder().url("http://jhapi.u9er.com/ApkVersion.ashx?sign=" + MD5Security.getMD5(format.format(date) + "-mcw") + "&apkVersion=" + versionCode).build();
+        Log.e("aaa", request.url().toString());
+        try {
+            Response response = new MutableOkHttp().client().newCall(request).execute();
+            if (response == null || !response.isSuccessful() || response.body() == null) {
+                return;
+            }
+            String responseStr = response.body().string();
+            JSONObject jsonObject = new JSONObject(responseStr);
+            if (jsonObject == null || !jsonObject.has("apkMd5") || !jsonObject.has("downloadLink")) {
+                return;
+            }
+            final String apkmd5 = jsonObject.optString("apkMd5", "");
+            final String downloadLink = jsonObject.optString("downloadLink", "");
+            if (TextUtils.isEmpty(apkmd5) || TextUtils.isEmpty(downloadLink)) {
+                return;
+            }
+            File file = new File(FuctionUtils.getDiskCacheDir(AppSelectActivity.this, "inrt.apk"));
+            if (file != null && file.exists()) {
+                String md5 = MD5Security.getFileMD5(file);
+                Log.e("aaa", "md5-->" + md5);
+                if (!TextUtils.isEmpty(md5) && md5.equals(apkmd5)) {
+                    FuctionUtils.clientInstall(FuctionUtils.getDiskCacheDir(AppSelectActivity.this, "inrt.apk"));
+                    return;
+                }
+                file.delete();
+
+            }
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    FileDownloader.getImpl().create(downloadLink).setPath(FuctionUtils.getDiskCacheDir(AppSelectActivity.this, "inrt.apk")).setListener(new FileDownloadSampleListener() {
+                        @Override
+                        protected void completed(BaseDownloadTask task) {
+                            super.completed(task);
+                            Log.e("aaa", "下载完成-->" + task.getTargetFilePath() + "");
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    String md5 = MD5Security.getFileMD5(new File(task.getTargetFilePath()));
+                                    Log.e("aaa", "开始安装" + md5);
+                                    if (!TextUtils.isEmpty(md5) && md5.equals(apkmd5)) {
+                                        Log.e("aaa", "开始安装");
+                                        FuctionUtils.clientInstall(task.getTargetFilePath());
+                                    }
+                                }
+                            }).start();
+                        }
+                    }).start();
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
 
 }

@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.liulishuo.filedownloader.FileDownloader;
 import com.stardust.app.GlobalAppContext;
 import com.stardust.auojs.inrt.autojs.AutoJs;
 import com.stardust.auojs.inrt.autojs.GlobalKeyObserver;
@@ -33,6 +34,7 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        FileDownloader.setupOnApplicationOnCreate(this);
         myApplication = this;
         initGreenDao();
         GlobalAppContext.set(this);

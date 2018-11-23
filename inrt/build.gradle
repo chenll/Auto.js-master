@@ -9,8 +9,8 @@ android {
         applicationId "com.stardust.auojs.inrt"
         minSdkVersion 17
         targetSdkVersion 23
-        versionCode 204
-        versionName "4.0.1"
+        versionCode 203
+        versionName "4.0.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         ndk {
             abiFilters 'armeabi-v7a'
@@ -71,9 +71,10 @@ dependencies {
     implementation 'com.qmuiteam:qmui:1.1.7'
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
     implementation "io.reactivex.rxjava2:rxjava:2.2.3"
-    implementation ('com.github.tbruyelle:rxpermissions:0.10.2'){
+    implementation('com.github.tbruyelle:rxpermissions:0.10.2') {
         exclude group: 'com.android.support'
     }
+    implementation 'com.liulishuo.filedownloader:library:1.7.5'
 
 
 

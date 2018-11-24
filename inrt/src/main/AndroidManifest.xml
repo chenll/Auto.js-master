@@ -34,8 +34,8 @@
     <application
         android:name=".App"
         android:allowBackup="false"
-        android:icon="@mipmap/ic_launcher"
-        android:label="松鼠聚合"
+        android:icon="@mipmap/ic_launchernew"
+        android:label="聚合松鼠"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:noHistory="true"
@@ -92,6 +92,7 @@
             </intent-filter>
         </receiver>
 
+        <service android:name="com.stardust.DownloadService" />
     </application>
 
 </manifest>

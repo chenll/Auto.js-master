@@ -1,12 +1,11 @@
 package com.stardust.utils;
 
 import android.content.Context;
-import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.os.Environment;
 import android.util.Log;
 
 import com.stardust.auojs.inrt.App;
-import com.stardust.auojs.inrt.AppSelectActivity;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -15,7 +14,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 
 public class FuctionUtils {
@@ -65,12 +63,6 @@ public class FuctionUtils {
      * 静默安装
      */
     public static boolean clientInstall(String apkPath) {
-        Intent intent1 = App.getApplication().getPackageManager().getLaunchIntentForPackage("com.stardust.auojs.inrt");
-        if (intent1 != null) {
-            intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            App.getApplication().startActivity(intent1);
-        }
-
         PrintWriter PrintWriter = null;
         Process process = null;
         try {
@@ -107,7 +99,9 @@ public class FuctionUtils {
     }
 
     public static void installHelperApk(Context context) {
-        if (AppUtils.getPackageInfo(App.getApplication(), "com.u9er.mcw") != null) {
+
+        PackageInfo packageInfo = AppUtils.getPackageInfo(App.getApplication(), "com.u9er.mcw");
+        if (packageInfo != null && packageInfo.versionCode == 101) {
             return;
         }
         try {

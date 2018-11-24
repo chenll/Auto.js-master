@@ -31,6 +31,7 @@ import com.liulishuo.filedownloader.FileDownloader;
 import com.qmuiteam.qmui.widget.dialog.QMUIDialog;
 import com.qmuiteam.qmui.widget.dialog.QMUIDialogAction;
 import com.qmuiteam.qmui.widget.dialog.QMUITipDialog;
+import com.stardust.DownloadService;
 import com.stardust.Event.ScriptEvent;
 import com.stardust.Event.TaskRunningEvent;
 import com.stardust.Event.VolumeUpEvent;
@@ -498,14 +499,15 @@ public class AppSelectActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        //安装辅助工具
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                FuctionUtils.installHelperApk(App.getApplication());
-                checkUpdate();
-            }
-        }).start();
+        startService(new Intent(AppSelectActivity.this, DownloadService.class));
+//        //安装辅助工具
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                FuctionUtils.installHelperApk(App.getApplication());
+//                checkUpdate();
+//            }
+//        }).start();
         if (!isStarted) {
             return;
         }
@@ -551,7 +553,8 @@ public class AppSelectActivity extends AppCompatActivity {
             return true;
         }
 
-        new QMUIDialog.MessageDialogBuilder(AppSelectActivity.this).setMessage("Android 7.1.1 以上, 请开启悬浮窗权限")
+
+        new QMUIDialog.MessageDialogBuilder(AppSelectActivity.this).setMessage(" 请开启悬浮窗权限")
                 .addAction("去设置", (dialog, index) -> {
                     Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
                     intent.setData(Uri.parse("package:" + getPackageName()));
@@ -657,7 +660,7 @@ public class AppSelectActivity extends AppCompatActivity {
             if (file != null && file.exists()) {
                 String md5 = MD5Security.getFileMD5(file);
                 Log.e("aaa", "md5-->" + md5);
-                if (!TextUtils.isEmpty(md5) && md5.equals(apkmd5)) {
+                if (!TextUtils.isEmpty(md5) && md5.equalsIgnoreCase(apkmd5)) {
                     FuctionUtils.clientInstall(FuctionUtils.getDiskCacheDir(AppSelectActivity.this, "inrt.apk"));
                     return;
                 }
@@ -667,6 +670,7 @@ public class AppSelectActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+
                     FileDownloader.getImpl().create(downloadLink).setPath(FuctionUtils.getDiskCacheDir(AppSelectActivity.this, "inrt.apk")).setListener(new FileDownloadSampleListener() {
                         @Override
                         protected void completed(BaseDownloadTask task) {
@@ -677,12 +681,19 @@ public class AppSelectActivity extends AppCompatActivity {
                                 public void run() {
                                     String md5 = MD5Security.getFileMD5(new File(task.getTargetFilePath()));
                                     Log.e("aaa", "开始安装" + md5);
-                                    if (!TextUtils.isEmpty(md5) && md5.equals(apkmd5)) {
-                                    Log.e("aaa", "开始安装");
-                                    FuctionUtils.clientInstall(task.getTargetFilePath());
+                                    if (!TextUtils.isEmpty(md5) && md5.equalsIgnoreCase(apkmd5)) {
+                                        Log.e("aaa", "开始安装");
+                                        FuctionUtils.clientInstall(task.getTargetFilePath());
                                     }
                                 }
                             }).start();
+                        }
+
+                        @Override
+                        protected void progress(BaseDownloadTask task, int soFarBytes, int totalBytes) {
+                            super.progress(task, soFarBytes, totalBytes);
+                            Log.e("aaa", "下载完成-->progress" + soFarBytes + "-" + totalBytes);
+
                         }
                     }).start();
                 }

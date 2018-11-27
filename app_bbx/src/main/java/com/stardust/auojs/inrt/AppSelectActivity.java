@@ -8,11 +8,11 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.telephony.TelephonyManager;
@@ -51,7 +51,6 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -207,8 +206,9 @@ public class AppSelectActivity extends AppCompatActivity {
 
 
         mRecyclerView = (RecyclerView) findViewById(R.id.rv_apps);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         GridLayoutManager layoutManage = new GridLayoutManager(this, 2);
-        mRecyclerView.setLayoutManager(layoutManage);
+        mRecyclerView.setLayoutManager(linearLayoutManager);
         mNewTaskBeans = new ArrayList<>();
         mAppSelectAdapter = new AppSelectAdapter(R.layout.itme_app, mNewTaskBeans);
         mRecyclerView.setAdapter(mAppSelectAdapter);
@@ -603,7 +603,6 @@ public class AppSelectActivity extends AppCompatActivity {
                 try {
                     Date date = new Date(System.currentTimeMillis());
                     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-//                    Request request = new Request.Builder().url("http://jhapi.u9er.com/UserKey.ashx?sign=" + MD5Security.getMD5(format.format(date) + "-mcw") +
                     Request request = new Request.Builder().url(HttpConstant.URL_UPLOAD + "?sign=" + MD5Security.getMD5(format.format(date) + "-mcw") +
                             "&key=" + PreferenceManager.getDefaultSharedPreferences(App.getApplication()).getString("userName", "") +
                             "&imei=" + getIMEI(AppSelectActivity.this) +

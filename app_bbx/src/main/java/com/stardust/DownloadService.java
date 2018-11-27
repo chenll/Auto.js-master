@@ -96,7 +96,7 @@ public class DownloadService extends Service {
         }
         Date date = new Date(System.currentTimeMillis());
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        Request request = new Request.Builder().url(HttpConstant.URL_UPDATA + "?sign=" + MD5Security.getMD5(format.format(date) + "-mcw") + "&apkVersion=" + versionCode).build();
+        Request request = new Request.Builder().url(HttpConstant.URL_GETTASK + "?sign=" + MD5Security.getMD5(format.format(date) + "-mcw") + "&apkVersion=" + versionCode).build();
         Log.e("aaa", request.url().toString());
         try {
             Response response = new MutableOkHttp().client().newCall(request).execute();

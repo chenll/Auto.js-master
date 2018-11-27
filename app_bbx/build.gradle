@@ -6,11 +6,11 @@ android {
     buildToolsVersion '26.0.2'
 
     defaultConfig {
-        applicationId "com.stardust.auojs.inrt"
+        applicationId "com.mcw.bbx"
         minSdkVersion 17
         targetSdkVersion 23
-        versionCode 405
-        versionName "4.0.5"
+        versionCode 100
+        versionName "1.0.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         ndk {
             abiFilters 'armeabi-v7a'

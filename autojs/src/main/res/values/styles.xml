@@ -27,7 +27,7 @@
         <item name="android:backgroundDimEnabled">false</item>
     </style>
 
-    <color name="colorPrimary">#009688</color>
-    <color name="colorPrimaryDark">#009688</color>
-    <color name="colorAccent">#03a9f4</color>
+    <color name="colorPrimary">#625BAD</color>
+    <color name="colorPrimaryDark">#625BAD</color>
+    <color name="colorAccent">#625BAD</color>
 </resources>

@@ -93,6 +93,7 @@ while (residueDegree > 0) {
         toast("任务运行异常1003");
         exitTask();
     }
+    signIn();
     var textViews = id(targetTextId).find();
     if (textViews != null && textViews.length != 0) {
         android.util.Log.e("aaa", "textview个数" + textViews.length);
@@ -310,6 +311,7 @@ function executeTask(textView) {
 
 }
 
+
 function getSlidingIntervalTimes(){
    return random(task.getSlidingInterval()/2, task.getSlidingInterval());
 }
@@ -341,4 +343,43 @@ function exitApp() {
 //            back();
 //        }
 //    }
+}
+//签到
+function signIn() {
+    if (appAutoMessage == null) {
+            android.util.Log.e("bbb", "1111");
+
+        return;
+    }
+    if (!appAutoMessage.isCanSign()) {
+                android.util.Log.e("bbb", "2222");
+        return;
+    }
+    var signIds = appAutoMessage.setSignInIds();
+    if (signIds == null || signIds.length == 0) {
+                android.util.Log.e("bbb", "3333");
+
+        return;
+    }
+    for (var i = 0; i < signIds.length; i++) {
+        try {
+            var btn = id(signIds[i]).findOnce();
+            if (btn != null) {
+                if (i == 0 && !btn.click()) {
+                                android.util.Log.e("bbb", "444");
+
+                    break;
+                } else {
+                                android.util.Log.e("bbb", "555");
+
+                    btn.click();
+                }
+            } else if (i == 0) {
+                            android.util.Log.e("bbb", "666");
+
+                break;
+            }
+        } catch (erro) {}
+
+    }
 }

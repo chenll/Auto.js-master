@@ -6,6 +6,8 @@
     <!--点击文字 id-->
     <!--list id-->
     <!--关闭按钮 id-->
+    <!--签到按钮 id-->
+    <!--签到间隔时间-->
     <string-array name="com.yanhui.qktx">
         <item>趣看天下</item>
         <item>com.yanhui.qktx.activity.MainActivity</item>
@@ -13,6 +15,8 @@
         <item>com.yanhui.qktx:id/tv_title</item>
         <item>com.yanhui.qktx:id/rv_news</item>
         <item>com.yanhui.qktx:id/bt_open_push_cancle</item>
+        <item>com.yanhui.qktx:id/img_time|com.yanhui.qktx:id/tv_confirm</item>
+        <item>3600000</item>
     </string-array>
 
 
@@ -24,6 +28,8 @@
         <item>com.xiangzi.jukandian:id/item_artical_three_title_tv</item>
         <item>com.xiangzi.jukandian:id/rv_artical_list_view</item>
         <item></item>
+        <item>com.xiangzi.jukandian:id/rl_lingqu_par|com.xiangzi.jukandian:id/dialog_close|com.xiangzi.jukandian:id/lingqu_dismiss</item>
+        <item>360000</item>
     </string-array>
 
 
@@ -36,6 +42,8 @@
         <item>com.ldzs.zhangxin:id/tv_article_title</item>
         <item>com.ldzs.zhangxin:id/pull_list_view</item>
         <item>com.ldzs.zhangxin:id/iv_close_packet|com.ldzs.zhangxin:id/btn_close</item>
+        <item>com.ldzs.zhangxin:id/time_period_layout</item>
+        <item>3600000</item>
     </string-array>
 
 
@@ -48,6 +56,8 @@
         <item>com.sogou.todayread:id/news_title</item>
         <item>com.sogou.todayread:id/news_listview</item>
         <item>com.sogou.todayread:id/red_packet_close_btn|com.sogou.todayread:id/effective_close_btn|com.sogou.todayread:id/bonus_dlg_close_btn</item>
+        <item></item>
+        <item></item>
     </string-array>
 
 
@@ -60,6 +70,8 @@
         <item>cn.youth.news:id/tv_article_title</item>
         <item>cn.youth.news:id/pull_list_view</item>
         <item>cn.youth.news:id/tv_pass|android:id/button2|cn.youth.news:id/iv_close|cn.youth.news:id/btn_close</item>
+        <item></item>
+        <item></item>
     </string-array>
 
 
@@ -71,6 +83,8 @@
         <item>com.yooee.headline:id/title</item>
         <item>com.yooee.headline:id/list</item>
         <item>com.yooee.headline:id/close|com.yooee.headline:id/next|com.yooee.headline:id/get</item>
+        <item></item>
+        <item></item>
     </string-array>
 
 
@@ -82,6 +96,8 @@
         <item>cn.weli.story:id/tv_title</item>
         <item>cn.weli.story:id/recyclerView</item>
         <item>cn.weli.story:id/iv_close|cn.weli.story:id/bt_ok|cn.weli.story:id/iv_take|cn.weli.story:id/tv_new_comer_gain</item>
+        <item></item>
+        <item></item>
     </string-array>
 
 
@@ -94,6 +110,8 @@
         <item>com.kuaima.browser:id/tv_title</item>
         <item>com.kuaima.browser:id/lv_reward_mission</item>
         <item>com.kuaima.browser:id/iv_cancle|com.kuaima.browser:id/cust_left</item>
+        <item></item>
+        <item></item>
     </string-array>
 
 
@@ -105,6 +123,8 @@
         <item>com.weikuai.wknews:id/new_title</item>
         <item></item>
         <item>com.weikuai.wknews:id/iv_close</item>
+        <item></item>
+        <item></item>
     </string-array>
 
 
@@ -115,6 +135,8 @@
         <item>com.jifen.qukan:id/z0</item>
         <item>com.jifen.qukan:id/nt</item>
         <item>com.jifen.qukan:id/a4y|com.jifen.qukan:id/sw|com.jifen.qukan:id/ql</item>
+        <item>com.jifen.qukan:id/us|com.jifen.qukan:id/sw</item>
+        <item>3600000</item>
     </string-array>
 
     <string-array name="com.coohua.xinwenzhuan">
@@ -123,6 +145,8 @@
         <item></item>
         <item>com.coohua.xinwenzhuan:id/tab_feed__item_img_multi_title</item>
         <item>com.coohua.xinwenzhuan:id/home_news_list</item>
+        <item></item>
+        <item></item>
         <item></item>
     </string-array>
 </resources>

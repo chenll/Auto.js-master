@@ -1,5 +1,9 @@
 package com.stardust.auojs.inrt.bean;
 
+import android.preference.PreferenceManager;
+
+import com.stardust.auojs.inrt.App;
+
 import java.util.ArrayList;
 
 public class AppAutoMessage {
@@ -11,10 +15,9 @@ public class AppAutoMessage {
     private String targetTextId;
     private String rollViewId;
     private ArrayList<String> dialogIds;
-
-
-
     private String exitBtnId;
+    private ArrayList<String> signInIds;
+    private long signInTime;
 
     public String getAppName() {
         return appName;
@@ -64,12 +67,12 @@ public class AppAutoMessage {
         this.rollViewId = rollViewId;
     }
 
-    public String[]  getDialogIds() {
+    public String[] getDialogIds() {
 
-        if(dialogIds==null||dialogIds.isEmpty()){
-            return  null;
+        if (dialogIds == null || dialogIds.isEmpty()) {
+            return null;
         }
-        String[] array = (String[])dialogIds.toArray(new String[dialogIds.size()]);
+        String[] array = (String[]) dialogIds.toArray(new String[dialogIds.size()]);
 
         return array;
     }
@@ -77,6 +80,7 @@ public class AppAutoMessage {
     public void setDialogIds(ArrayList<String> dialogIds) {
         this.dialogIds = dialogIds;
     }
+
     public String getExitBtnId() {
         return exitBtnId;
     }
@@ -84,6 +88,23 @@ public class AppAutoMessage {
     public void setExitBtnId(String exitBtnId) {
         this.exitBtnId = exitBtnId;
     }
+
+    public ArrayList<String> getSignInIds() {
+        return signInIds;
+    }
+
+    public void setSignInIds(ArrayList<String> signInIds) {
+        this.signInIds = signInIds;
+    }
+
+    public long getSignInTime() {
+        return signInTime;
+    }
+
+    public void setSignInTime(long signInTime) {
+        this.signInTime = signInTime;
+    }
+
     @Override
     public String toString() {
         return "AppAutoMessage{" +
@@ -95,5 +116,17 @@ public class AppAutoMessage {
                 ", rollViewId='" + rollViewId + '\'' +
                 ", dialogIds=" + dialogIds +
                 '}';
+    }
+
+    public boolean isCanSign() {
+        if (signInTime == 0 || signInIds == null || signInIds.isEmpty()) {
+            return false;
+        }
+        long lastSignInTime = PreferenceManager.getDefaultSharedPreferences(App.getApplication()).getLong(packageName + "_lastSignintime", 0l);
+        if (System.currentTimeMillis() - lastSignInTime < signInTime) {
+            return false;
+        }
+        PreferenceManager.getDefaultSharedPreferences(App.getApplication()).edit().putLong(packageName + "_lastSignintime", System.currentTimeMillis()).commit();
+        return true;
     }
 }

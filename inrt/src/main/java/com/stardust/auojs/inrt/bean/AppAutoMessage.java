@@ -89,8 +89,13 @@ public class AppAutoMessage {
         this.exitBtnId = exitBtnId;
     }
 
-    public ArrayList<String> getSignInIds() {
-        return signInIds;
+    public String[] getSignInIds() {
+        if (signInIds == null || signInIds.isEmpty()) {
+            return null;
+        }
+        String[] array = (String[]) signInIds.toArray(new String[signInIds.size()]);
+        return array;
+
     }
 
     public void setSignInIds(ArrayList<String> signInIds) {

@@ -347,39 +347,47 @@ function exitApp() {
 //签到
 function signIn() {
     if (appAutoMessage == null) {
-            android.util.Log.e("bbb", "1111");
-
+         android.util.Log.e("bbb", "1111");
         return;
     }
+             android.util.Log.e("bbb", "1111-");
+
     if (!appAutoMessage.isCanSign()) {
                 android.util.Log.e("bbb", "2222");
         return;
     }
-    var signIds = appAutoMessage.setSignInIds();
+                    android.util.Log.e("bbb", "2222-");
+    var signIds = appAutoMessage.getSignInIds();
     if (signIds == null || signIds.length == 0) {
                 android.util.Log.e("bbb", "3333");
 
         return;
     }
+                    android.util.Log.e("bbb", "3333-"+ signIds.length);
+
     for (var i = 0; i < signIds.length; i++) {
+                        android.util.Log.e("bbb", "-----");
+
         try {
             var btn = id(signIds[i]).findOnce();
             if (btn != null) {
-                if (i == 0 && !btn.click()) {
-                                android.util.Log.e("bbb", "444");
-
-                    break;
-                } else {
-                                android.util.Log.e("bbb", "555");
-
-                    btn.click();
+                if ( !btn.click()) {
+                    android.util.Log.e("bbb", "444");
+                    if(i==0){
+                        break;
+                    }
+                } else{
+                                    android.util.Log.e("bbb", "555");
+                    sleep(1000);
                 }
             } else if (i == 0) {
-                            android.util.Log.e("bbb", "666");
-
+                android.util.Log.e("bbb", "666");
                 break;
             }
-        } catch (erro) {}
+        } catch (erro) {
+                android.util.Log.e("bbb", erro);
+
+        }
 
     }
 }

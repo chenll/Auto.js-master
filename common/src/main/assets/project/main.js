@@ -80,6 +80,51 @@ if (getListView() == null) {
     toast("任务运行异常1001")
     exitTask();
 }
+//-----------做任务-----------
+    sleep(2000);
+    if(pName == "com.yanhui.qktx"){
+        click("我的");
+        sleep(1000);
+        shell("input swipe " + 300 + " " + (device.height) * 4 / 5 + " " + 300 + " " + (device.height) / 4 + " " + getSwipeTimes(), true);
+        click("每日金币",0);
+        sleep(5000);
+        back();
+        sleep(1000);
+        click("首页",0);
+        sleep(1000);
+    }else if(pName == "com.xiangzi.jukandian"){
+        var btn001 = id(exitBtnId).findOne(1000);
+        if(btn001!=null){
+            btn001.click();
+        }
+    }
+//    else if(pName == "com.sogou.todayread"){
+//         //点击任务
+//         shell("input tap 455 1233" , true);
+//         sleep(1000);
+//         //点击签到
+//         shell("input tap 500 255" , true);
+//         sleep(1000);
+//         //点击开启宝箱
+//         shell("input tap 399 717" , true);
+//         sleep(1000);
+//         //关闭宝箱弹窗
+//         shell("input tap 578 395" , true);
+//         sleep(1000);
+//
+//
+//        //今日要看
+//        var btn001 = id(exitBtnId).findOne(1000);
+//        if(btn001!=null){
+//            btn001.click();
+//        }
+//    }
+
+//-----------做任务-----------
+if (getListView() == null) {
+    toast("任务运行异常1001")
+    exitTask();
+}
 //剩余次数
 var residueDegree = task.getTotalNumber();
 //错误最多尝试100次
@@ -291,8 +336,8 @@ function executeTask(textView) {
             // getSlidingSpeed滑动速度
             // swipe(300, 1600, 300, 1020, task.getSlidingSpeed());
 //            scrollDown(0);
+findReadAll();
             shell("input swipe " + 300 + " " + (device.height) * 4 / 5 + " " + 300 + " " + (device.height) / 3 + " " + getSwipeTimes(), true)
-
 //                  var readAll = textContains("查看全文").findOnce();
 //                  if(readAll!=null){
 //                     readAll.click();
@@ -344,49 +389,69 @@ function exitApp() {
 //        }
 //    }
 }
+
+//查找阅读全文
+function findReadAll(){
+//请求截屏
+requestScreenCapture();
+sleep(1000);
+var btnCatur = id("android:id/button1").findOnce();
+if(btnCatur!=null)
+{
+btnCatur.click();
+}
+
+
+//截图
+var img = captureScreen();
+if(img==null)
+{
+return;
+}
+//在该图片中找色，指定找色区域为在位置(400, 500)的宽为300长为200的区域，指定找色临界值为4
+var point = findColor(img, "#FEE8E2", {
+     region: [device.width/2, 100, 100, device.height-200],
+//     region: [400, 500, 300, 200],
+     threshold: 4
+ });
+ if(point){
+     toast("找到啦:" + point);
+     sleep(1000);
+              shell("input tap "+point.x+" "+point.y , true);
+
+ }else{
+     toast("没找到");
+ }
+
+}
+
 //签到
 function signIn() {
     if (appAutoMessage == null) {
-         android.util.Log.e("bbb", "1111");
         return;
     }
-             android.util.Log.e("bbb", "1111-");
-
     if (!appAutoMessage.isCanSign()) {
-                android.util.Log.e("bbb", "2222");
         return;
     }
-                    android.util.Log.e("bbb", "2222-");
     var signIds = appAutoMessage.getSignInIds();
     if (signIds == null || signIds.length == 0) {
-                android.util.Log.e("bbb", "3333");
-
         return;
     }
-                    android.util.Log.e("bbb", "3333-"+ signIds.length);
-
     for (var i = 0; i < signIds.length; i++) {
-                        android.util.Log.e("bbb", "-----");
-
         try {
             var btn = id(signIds[i]).findOnce();
             if (btn != null) {
                 if ( !btn.click()) {
-                    android.util.Log.e("bbb", "444");
                     if(i==0){
                         break;
                     }
                 } else{
-                                    android.util.Log.e("bbb", "555");
                     sleep(1000);
                 }
             } else if (i == 0) {
-                android.util.Log.e("bbb", "666");
                 break;
             }
         } catch (erro) {
-                android.util.Log.e("bbb", erro);
-
         }
 
     }

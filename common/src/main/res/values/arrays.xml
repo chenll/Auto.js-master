@@ -17,8 +17,8 @@
         <item>com.yanhui.qktx:id/bt_open_push_cancle</item>
         <item>com.yanhui.qktx:id/img_time#com.yanhui.qktx:id/tv_confirm</item>
         <item>3600000</item>
+        <item>#FEE8E2</item>
     </string-array>
-
 
 
     <string-array name="com.xiangzi.jukandian">
@@ -30,9 +30,8 @@
         <item></item>
         <item>com.xiangzi.jukandian:id/rl_lingqu_par#com.xiangzi.jukandian:id/dialog_close#com.xiangzi.jukandian:id/lingqu_dismiss</item>
         <item>360000</item>
+        <item>#F9643B</item>
     </string-array>
-
-
 
 
     <string-array name="com.ldzs.zhangxin">
@@ -44,9 +43,8 @@
         <item>com.ldzs.zhangxin:id/iv_close_packet#com.ldzs.zhangxin:id/btn_close</item>
         <item>com.ldzs.zhangxin:id/time_period_layout</item>
         <item>3600000</item>
+        <item>#FB633B</item>
     </string-array>
-
-
 
 
     <string-array name="com.sogou.todayread">
@@ -58,9 +56,8 @@
         <item>com.sogou.todayread:id/red_packet_close_btn#com.sogou.todayread:id/effective_close_btn#com.sogou.todayread:id/bonus_dlg_close_btn</item>
         <item></item>
         <item></item>
+        <item></item>
     </string-array>
-
-
 
 
     <string-array name="cn.youth.news">
@@ -72,8 +69,8 @@
         <item>cn.youth.news:id/tv_pass#android:id/button2#cn.youth.news:id/iv_close#cn.youth.news:id/btn_close</item>
         <item></item>
         <item></item>
+        <item></item>
     </string-array>
-
 
 
     <string-array name="com.yooee.headline">
@@ -85,6 +82,7 @@
         <item>com.yooee.headline:id/close#com.yooee.headline:id/next#com.yooee.headline:id/get</item>
         <item></item>
         <item></item>
+        <item>#fffadf5b</item>
     </string-array>
 
 
@@ -95,11 +93,11 @@
         <item></item>
         <item>cn.weli.story:id/tv_title</item>
         <item>cn.weli.story:id/recyclerView</item>
-        <item>cn.weli.story:id/iv_close#cn.weli.story:id/bt_ok#cn.weli.story:id/iv_take#cn.weli.story:id/tv_new_comer_gain</item>
+        <item>cn.weli.story:id/iv_close#cn.weli.story:id/bt_ok#cn.weli.story:id/iv_take#cn.weli.story:id/tv_new_comer_gain#cn.weli.story:id/text_ok</item>
         <item></item>
         <item></item>
+        <item>#E5F2FE</item>
     </string-array>
-
 
 
     <!--不支持了-->
@@ -110,6 +108,7 @@
         <item>com.kuaima.browser:id/tv_title</item>
         <item>com.kuaima.browser:id/lv_reward_mission</item>
         <item>com.kuaima.browser:id/iv_cancle#com.kuaima.browser:id/cust_left</item>
+        <item></item>
         <item></item>
         <item></item>
     </string-array>
@@ -125,6 +124,7 @@
         <item>com.weikuai.wknews:id/iv_close</item>
         <item></item>
         <item></item>
+        <item></item>
     </string-array>
 
 
@@ -137,6 +137,7 @@
         <item>com.jifen.qukan:id/a4y#com.jifen.qukan:id/sw#com.jifen.qukan:id/ql</item>
         <item>com.jifen.qukan:id/us#com.jifen.qukan:id/sw</item>
         <item>3600000</item>
+        <item></item>
     </string-array>
 
     <string-array name="com.coohua.xinwenzhuan">
@@ -145,8 +146,154 @@
         <item></item>
         <item>com.coohua.xinwenzhuan:id/tab_feed__item_img_multi_title</item>
         <item>com.coohua.xinwenzhuan:id/home_news_list</item>
+        <item>com.coohua.xinwenzhuan:id/xlxl_alert_negative</item>
+        <item></item>
+        <item></item>
+        <item>#FC574B</item>
+    </string-array>
+
+
+    <!--名称-->
+    <!--主Activity-->
+    <!--跳过Activity-->
+    <!--点击文字 id-->
+    <!--list id-->
+    <!--关闭按钮 id-->
+    <!--签到按钮 id-->
+    <!--签到间隔时间-->
+    <string-array name="com.billionstech.grassbook">
+        <item>海草公社</item>
+        <item>com.billionstech.grassbook.business.main.MainActivity</item>
+        <item></item>
+        <item>com.billionstech.grassbook:id/tv_find_list_summary_type_</item>
+        <item>com.billionstech.grassbook:id/rv_find_list</item>
+        <item>com.billionstech.grassbook:id/iv_ranking_card_close#com.billionstech.grassbook:id/iv_close</item>
+        <item>com.billionstech.grassbook:id/tv_find_receive</item>
+        <item>3600000</item>
+        <item></item>
+
+    </string-array>
+
+    <string-array name="com.huolea.bull">
+        <item>牛牛头条</item>
+        <item>com.huolea.bull.page.MainActivity</item>
+        <item></item>
+        <item>com.huolea.bull:id/title_tv</item>
+        <item>com.huolea.bull:id/id_fragment_news_list</item>
+        <item>com.huolea.bull:id/id_dialog_login_close</item>
+        <item>com.huolea.bull:id/id_fragment_information_datecoins_layout#com.huolea.bull:id/id_dialog_datecoins_cancel</item>
+        <item>1900000</item>
+        <item>#7D91FC</item>
+
+    </string-array>
+    <string-array name="c.l.a">
+        <item>闪电盒子</item>
+        <item>c.l.a.views.AppBoxHomeActivity</item>
+        <item></item>
+        <item>c.l.a:id/title</item>
+        <item>c.l.a:id/recyvlerview</item>
+        <item></item>
         <item></item>
         <item></item>
         <item></item>
     </string-array>
+    <string-array name="com.lite.infoflow">
+        <item>头条多多</item>
+        <item>com.ttdd.contents.BrowserActivity</item>
+        <item></item>
+        <item>com.lite.infoflow.browser:id/vo</item>
+        <item>com.lite.infoflow.browser:id/y9</item>
+        <item>com.lite.infoflow.browser:id/mf</item>
+        <item></item>
+        <item></item>
+        <item></item>
+    </string-array>
+
+    <string-array name="com.news.tutoutiao">
+        <item>兔头条</item>
+        <item>com.news.tutoutiao.MainActivity</item>
+        <item></item>
+        <item>com.news.tutoutiao:id/three_title</item>
+        <item>com.news.tutoutiao:id/home_recycle</item>
+        <item>com.news.tutoutiao:id/id_popupDelete#com.news.tutoutiao:id/de_tv_cance</item>
+        <item>com.news.tutoutiao:id/fh_iv_boxgif</item>
+        <item>660000</item>
+        <item>#4578EA</item>
+
+    </string-array>
+
+    <string-array name="com.jiuhuang.news">
+        <item>韭黄头条</item>
+        <item>com.jiuhuang.news.activity.MainActivity</item>
+        <item></item>
+        <item>com.jiuhuang.news:id/item1_title_tv</item>
+        <item>com.jiuhuang.news:id/xrecycler_view</item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+    </string-array>
+
+    <string-array name="com.expflow.reading">
+        <item>悦头条</item>
+        <item>com.expflow.reading.activity.MainActivity</item>
+        <item>com.expflow.reading.activity.RewardNewUserNewActivity</item>
+        <item>com.expflow.reading:id/txt_second_titleName</item>
+        <item>com.expflow.reading:id/recycleView_news</item>
+        <item>com.expflow.reading:id/ll_quit</item>
+        <item>com.expflow.reading:id/ll_counter_new#com.expflow.reading:id/tv_read_time_rule_know</item>
+        <item>1000</item>
+        <item>#C9E0FB</item>
+
+    </string-array>
+    <string-array name="com.yingliang.clicknews">
+        <item>点点新闻</item>
+        <item>com.yingliang.clicknews.MainActivity</item>
+        <item></item>
+        <item>com.yingliang.clicknews:id/tv_title</item>
+        <item>com.yingliang.clicknews:id/rv_news_list</item>
+        <item>com.yingliang.clicknews:id/iv_close</item>
+        <item></item>
+        <item>3600000</item>
+        <item>#CCDAF9</item>
+
+    </string-array>
+
+    <!--<string-array name="com.aitoutiao.newsapp">-->
+    <!--<item>爱头条</item>-->
+    <!--<item>com.news.hotheadlines.framwork.CoreActivity</item>-->
+    <!--<item></item>-->
+    <!--<item>com.yingliang.clicknews:id/tv_title</item>-->
+    <!--<item>com.yingliang.clicknews:id/rv_news_list</item>-->
+    <!--<item>com.yingliang.clicknews:id/iv_close</item>-->
+    <!--<item></item>-->
+    <!--<item>3600000</item>-->
+    <!--</string-array>-->
+
+    <string-array name="com.zhangku.qukandian">
+        <item>趣看点</item>
+        <item>com.zhangku.qukandian.activitys.information.InformationDetailsActivity</item>
+        <item></item>
+        <item>com.zhangku.qukandian:id/item_information_adapter_three_pic_title</item>
+        <item>com.zhangku.qukandian:id/base_refresh_recyclerview</item>
+        <item>com.zhangku.qukandian:id/dialog_operate_close#com.zhangku.qukandian:id/cancleTV</item>
+        <item>com.zhangku.qukandian:id/layout_chai_baoxiang_chai_btn#com.zhangku.qukandian:id/dialog_sign_cancel</item>
+        <item>3600000</item>
+        <item>#FDE5E6</item>
+    </string-array>
+
+    <string-array name="com.songheng.eastnews">
+        <item>东方头条</item>
+        <item>com.songheng.eastnews.common.view.activity.MainActivity</item>
+        <item></item>
+        <item>com.songheng.eastnews:id/nu</item>
+        <item>com.songheng.eastnews:id/fq</item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item>#47A4E8</item>
+    </string-array>
+
+
+
 </resources>

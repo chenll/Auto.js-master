@@ -420,6 +420,9 @@ public class AppSelectActivity extends AppCompatActivity {
             runTask();
             return;
         }
+        if (!AppAutoMgr.isSupport(packageInfo.packageName)) {
+            return;
+        }
         if (!taskBean.getF_AppVersion().equals(packageInfo.versionName)) {
             runTask();
             return;

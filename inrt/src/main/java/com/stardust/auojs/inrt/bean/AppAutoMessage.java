@@ -18,6 +18,7 @@ public class AppAutoMessage {
     private String exitBtnId;
     private ArrayList<String> signInIds;
     private long signInTime;
+    private String readAllColor;
 
     public String getAppName() {
         return appName;
@@ -108,6 +109,14 @@ public class AppAutoMessage {
 
     public void setSignInTime(long signInTime) {
         this.signInTime = signInTime;
+    }
+
+    public String getReadAllColor() {
+        return readAllColor;
+    }
+
+    public void setReadAllColor(String readAllColor) {
+        this.readAllColor = readAllColor;
     }
 
     @Override

@@ -20,6 +20,7 @@ var targetTextId = appAutoMessage.getTargetTextId();
 //首页上下滚动view的id
 var rollViewId = appAutoMessage.getRollViewId();
 var dialogIds = appAutoMessage.getDialogIds();
+var readAllColor = appAutoMessage.getReadAllColor();
 
 android.util.Log.e("aaa", "-----------------" + appName + "-----------------");
 android.util.Log.e("aaa", pName + "");
@@ -61,6 +62,13 @@ while (global.currentActivity() != atyMain && global.currentActivity() != atyDis
     if (new Date().getTime() - time >= 15000) {
         break;
     }
+    if (pName == "com.news.tutoutiao") {
+        var btnttt = id("com.news.tutoutiao:id/login_view").findOne(1000);
+        if (btnttt != null) {
+            btnttt.click();
+        }
+
+    }
     sleep(200);
 }
 
@@ -85,6 +93,11 @@ if (getListView() == null) {
     if(pName == "com.yanhui.qktx"){
         click("我的");
         sleep(1000);
+          var btnQktx001 = id("com.yanhui.qktx:id/img_close").findOne(1000);
+                if(btnQktx001!=null){
+                    btnQktx001.click();
+                }
+
         shell("input swipe " + 300 + " " + (device.height) * 4 / 5 + " " + 300 + " " + (device.height) / 4 + " " + getSwipeTimes(), true);
         click("每日金币",0);
         sleep(5000);
@@ -93,7 +106,7 @@ if (getListView() == null) {
         click("首页",0);
         sleep(1000);
     }else if(pName == "com.xiangzi.jukandian"){
-        var btn001 = id(exitBtnId).findOne(1000);
+        var btn001 = id("com.xiangzi.jukandian:id/tosign").findOne(1000);
         if(btn001!=null){
             btn001.click();
         }
@@ -139,7 +152,10 @@ while (residueDegree > 0) {
         exitTask();
     }
     signIn();
-    var textViews = id(targetTextId).find();
+    var textViews =  id(targetTextId).find();
+    if(textViews==null || textViews.length == 0){
+        textViews = idStartsWith(targetTextId).find();
+    }
     if (textViews != null && textViews.length != 0) {
         android.util.Log.e("aaa", "textview个数" + textViews.length);
         for (var j = 0; j < textViews.length; j++) {
@@ -336,8 +352,9 @@ function executeTask(textView) {
             // getSlidingSpeed滑动速度
             // swipe(300, 1600, 300, 1020, task.getSlidingSpeed());
 //            scrollDown(0);
-findReadAll();
-            shell("input swipe " + 300 + " " + (device.height) * 4 / 5 + " " + 300 + " " + (device.height) / 3 + " " + getSwipeTimes(), true)
+            shell("input swipe " + 300 + " " + (device.height) * 4 / 5 + " " + 300 + " " + (device.height) / 3 + " " + getSwipeTimes(), true);
+            findReadAll();
+
 //                  var readAll = textContains("查看全文").findOnce();
 //                  if(readAll!=null){
 //                     readAll.click();
@@ -371,62 +388,52 @@ function getSwipeTimes(){
 
 function exitApp() {
     shell("am force-stop " + pName, true);
-//    shell("pm disable "+pName,true);
-//
-//    if (exitBtnId == null || exitBtnId == "") {
-//        back();
-//        sleep(500);
-//        back();
-//    } else {
-//        back();
-//        android.util.Log.e("aaa", exitBtnId);
-//        var btnEixt = id(exitBtnId).findOne(1000);
-//        if (btnEixt != null) {
-//            btnEixt.click();
-//        } else {
-//            sleep(500);
-//            back();
-//        }
-//    }
 }
-
 //查找阅读全文
-function findReadAll(){
-//请求截屏
-requestScreenCapture();
-sleep(1000);
-var btnCatur = id("android:id/button1").findOnce();
-if(btnCatur!=null)
-{
-btnCatur.click();
-}
+function findReadAll() {
+//    //请求截屏
+//    requestScreenCapture();
+//    sleep(1000);
+//    var btnCatur = id("android:id/button1").findOnce();
+//    if (btnCatur != null) {
+//        btnCatur.click();
+//    }
 
+    if (readAllColor ==null || readAllColor.length==0) {
+        return;
+    }
 
-//截图
-var img = captureScreen();
-if(img==null)
-{
-return;
-}
-//在该图片中找色，指定找色区域为在位置(400, 500)的宽为300长为200的区域，指定找色临界值为4
-var point = findColor(img, "#FEE8E2", {
-     region: [device.width/2, 100, 100, device.height-200],
-//     region: [400, 500, 300, 200],
-     threshold: 4
- });
- if(point){
-     toast("找到啦:" + point);
-     sleep(1000);
-              shell("input tap "+point.x+" "+point.y , true);
+    shell("screencap /sdcard/screen.png",true);
+    //截图
+//    var img = captureScreen();
+    var img = images.read("/sdcard/screen.png");
+    if (img == null) {
+        return;
+    }
+//     var point111 = images.pixel(img, 800, 1690);
+//             toast("颜色:" +colors.toString(point111) );
 
- }else{
-     toast("没找到");
- }
+    sleep(500);
+    //在该图片中找色，指定找色区域为在位置(400, 500)的宽为300长为200的区域，指定找色临界值为4
+    var point = findColor(img, readAllColor, {
+        region: [device.width / 2 - 50, 100, 100, device.height - 100],
+        //     region: [400, 500, 300, 200],
+        threshold: 0
+    });
+    if (point) {
+//        toast("找到啦:" + point);
+        shell("input tap " + point.x + " " + (point.y+8), true);
+
+    } else {
+//        toast("没找到");
+    }
 
 }
 
 //签到
 function signIn() {
+    if(pName != "com.yanhui.qktx"){
+    return;}
     if (appAutoMessage == null) {
         return;
     }
@@ -441,18 +448,17 @@ function signIn() {
         try {
             var btn = id(signIds[i]).findOnce();
             if (btn != null) {
-                if ( !btn.click()) {
-                    if(i==0){
+                if (!btn.click()) {
+                    if (i == 0) {
                         break;
                     }
-                } else{
+                } else {
                     sleep(1000);
                 }
             } else if (i == 0) {
                 break;
             }
-        } catch (erro) {
-        }
+        } catch (erro) {}
 
     }
 }

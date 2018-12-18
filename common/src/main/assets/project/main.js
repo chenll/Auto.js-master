@@ -432,8 +432,8 @@ function findReadAll() {
 
 //签到
 function signIn() {
-    if(pName != "com.yanhui.qktx"){
-    return;}
+//    if(pName != "com.yanhui.qktx"){
+//    return;}
     if (appAutoMessage == null) {
         return;
     }

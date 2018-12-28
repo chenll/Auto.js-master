@@ -38,11 +38,11 @@ public class AppSelectAdapter extends BaseQuickAdapter<NewTaskBeanById, BaseView
 
         } else if (packageInfo != null) {
             helper.setText(R.id.tv_current_version, "安装版本:" + packageInfo.versionName + "");
-            if (!packageInfo.versionName.equals(item.getF_AppVersion())) {
-                helper.setText(R.id.tv_erro_hint, "版本不支持");
-                helper.setVisible(R.id.tv_erro_hint, true);
-                cardView.setCardBackgroundColor(Color.parseColor("#EE6A50"));
-            }
+//            if (!packageInfo.versionName.equals(item.getF_AppVersion())) {
+//                helper.setText(R.id.tv_erro_hint, "版本不支持");
+//                helper.setVisible(R.id.tv_erro_hint, true);
+//                cardView.setCardBackgroundColor(Color.parseColor("#EE6A50"));
+//            }
         } else {
             helper.setText(R.id.tv_current_version, "未安装");
             helper.setText(R.id.tv_erro_hint, "应用未安装");

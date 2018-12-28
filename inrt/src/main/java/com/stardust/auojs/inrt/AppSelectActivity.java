@@ -8,9 +8,9 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -36,22 +36,23 @@ import com.stardust.Event.ScriptEvent;
 import com.stardust.Event.TaskRunningEvent;
 import com.stardust.Event.VolumeUpEvent;
 import com.stardust.HttpConstant;
+import com.stardust.TaskBean;
 import com.stardust.auojs.inrt.adapter.AppSelectAdapter;
 import com.stardust.auojs.inrt.bean.NewTaskBeanById;
 import com.stardust.auojs.inrt.bean.NewTaskResponse;
+import com.stardust.auojs.inrt.bean.UpDateBean;
 import com.stardust.auojs.inrt.launch.GlobalProjectLauncher;
 import com.stardust.autojs.core.http.MutableOkHttp;
 import com.stardust.datebase.greenDao.NewTaskBeanByIdDao;
+import com.stardust.utils.AppUtils;
 import com.stardust.utils.FuctionUtils;
 import com.stardust.view.accessibility.AccessibilityService;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-import org.json.JSONObject;
 
 import java.io.File;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -123,9 +124,9 @@ public class AppSelectActivity extends AppCompatActivity {
                 if (!checkAccessibility()) {
                     return;
                 }
-                if (!checkDrawOverlays()) {
-                    return;
-                }
+//                if (!checkDrawOverlays()) {
+//                    return;
+//                }
                 if (!isFromeNet) {
                     Toast.makeText(AppSelectActivity.this, "任务已过期，请重新获取...", Toast.LENGTH_LONG).show();
                     return;
@@ -390,12 +391,15 @@ public class AppSelectActivity extends AppCompatActivity {
 
         if (AppAutoMgr.sNewTaskBean != null && !isStopFromePower) {
             int reTryTimes = PreferenceManager.getDefaultSharedPreferences(AppSelectActivity.this).getInt("retry_times", 0);
-            if (reTryTimes < 3) {
+            Log.e("aaa",reTryTimes+"reTryTimes");
+            if (reTryTimes < 2) {
                 NewTaskBeanById newTaskBeanInDb = App.getApplication().getDaoSession().getNewTaskBeanByIdDao().queryBuilder().where(NewTaskBeanByIdDao.Properties.F_Id.eq(AppAutoMgr.sNewTaskBean.getF_Id())).unique();
                 if (!newTaskBeanInDb.isExecutedSussed()) {
                     taskBean = AppAutoMgr.sNewTaskBean;
                     PreferenceManager.getDefaultSharedPreferences(AppSelectActivity.this).edit().putInt("retry_times", reTryTimes + 1).commit();
                 }
+            } else {
+                upLoadErro(AppAutoMgr.sNewTaskBean);
             }
 
         }
@@ -421,12 +425,13 @@ public class AppSelectActivity extends AppCompatActivity {
             return;
         }
         if (!AppAutoMgr.isSupport(packageInfo.packageName)) {
-            return;
-        }
-        if (!taskBean.getF_AppVersion().equals(packageInfo.versionName)) {
             runTask();
             return;
         }
+//        if (!taskBean.getF_AppVersion().equals(packageInfo.versionName)) {
+//            runTask();
+//            return;
+//        }
         //当前任务上传服务器
         upLoadRunningTask(taskBean.getF_PackageName());
         AppAutoMgr.CURRENTPACKAGENAME = taskBean.getF_PackageName();
@@ -556,7 +561,9 @@ public class AppSelectActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N_MR1 || Settings.canDrawOverlays(this)) {
             return true;
         }
-
+        if (1 == 1) {
+            return true;
+        }
 
         new QMUIDialog.MessageDialogBuilder(AppSelectActivity.this).setMessage(" 请开启悬浮窗权限")
                 .addAction("去设置", (dialog, index) -> {
@@ -587,10 +594,138 @@ public class AppSelectActivity extends AppCompatActivity {
 
     }
 
+    private QMUITipDialog upDataTipDialog;
+    private QMUIDialog.MessageDialogBuilder upDateDialogBuilder;
+    private int downLoadId = -1;
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        startActivity(new Intent(this, LogActivity.class));
-        return true;
+        if (item.getItemId() == R.id.log) {
+            startActivity(new Intent(this, LogActivity.class));
+            return true;
+
+        }
+        if (item.getItemId() == R.id.appDownload) {
+            startActivity(new Intent(this, AppDownloadActivity.class));
+            return true;
+        }
+        if (item.getItemId() == R.id.checkUpdata) {
+            if (upDataTipDialog == null) {
+                upDataTipDialog = new QMUITipDialog.Builder(AppSelectActivity.this).setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING).setTipWord("正在检查更新，请稍等...").create();
+            }
+
+            Observable.create((ObservableOnSubscribe<UpDateBean>) emitter -> {
+                UpDateBean upDateBean = null;
+                try {
+                    PackageInfo packageInfo = getApplicationContext().getPackageManager().getPackageInfo(getPackageName(), 0);
+                    upDateBean = NetWorkUtils.getUpDateBean(AppSelectActivity.this, packageInfo.versionCode + "");
+//                    upDateBean = NetWorkUtils.getUpDateBean(AppSelectActivity.this, "1");
+                } catch (PackageManager.NameNotFoundException e) {
+                    emitter.onError(null);
+                    return;
+                }
+                if (upDateBean != null) {
+                    emitter.onNext(upDateBean);
+                    emitter.onComplete();
+                } else {
+                    emitter.onError(null);
+                }
+            }).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Observer<UpDateBean>() {
+                        @Override
+                        public void onSubscribe(Disposable d) {
+                            upDataTipDialog.show();
+                        }
+
+                        @Override
+                        public void onNext(UpDateBean upDateBean) {
+                            if (upDateBean == null || TextUtils.isEmpty(upDateBean.getDownloadUrl()) || TextUtils.isEmpty(upDateBean.getApkMd5())) {
+                                return;
+                            }
+                            File file = new File(FuctionUtils.getDiskCacheDir(AppSelectActivity.this, "inrt1.apk"));
+                            if (file != null && file.exists()) {
+                                file.delete();
+                            }
+                            FileDownloader.getImpl().pauseAll();
+                            upDateDialogBuilder = new QMUIDialog.MessageDialogBuilder(AppSelectActivity.this).setMessage("检查到有新版本")
+                                    .addAction("立刻更新", (dialog, index) -> {
+                                        upDateDialogBuilder.getTextView().setText("正在下载,请稍等...");
+                                        FileDownloader.getImpl()
+                                                .create(upDateBean.getDownloadUrl())
+                                                .setPath(FuctionUtils.getDiskCacheDir(AppSelectActivity.this, "inrt1.apk"))
+                                                .setListener(new FileDownloadSampleListener() {
+
+                                                    @Override
+                                                    protected void blockComplete(BaseDownloadTask task) {
+                                                        super.blockComplete(task);
+                                                    }
+
+                                                    @Override
+                                                    protected void pending(BaseDownloadTask task, int soFarBytes, int totalBytes) {
+                                                        super.pending(task, soFarBytes, totalBytes);
+                                                    }
+
+                                                    @Override
+                                                    protected void started(BaseDownloadTask task) {
+                                                        super.started(task);
+                                                    }
+
+                                                    @Override
+                                                    protected void completed(BaseDownloadTask task) {
+                                                        super.completed(task);
+                                                        upDateDialogBuilder.getTextView().setText("下载完成 ");
+                                                        dialog.dismiss();
+                                                        Log.e("aaa", "下载完成-->" + task.getTargetFilePath() + "");
+//                                                downloadingTip.dismiss();
+                                                        File apkFile = new File(FuctionUtils.getDiskCacheDir(AppSelectActivity.this, "inrt1.apk"));
+                                                        Intent intent = new Intent(Intent.ACTION_VIEW);
+                                                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                                        intent.setDataAndType(Uri.fromFile(apkFile), "application/vnd.android.package-archive");
+                                                        startActivity(intent);
+                                                    }
+
+                                                    @Override
+                                                    protected void error(BaseDownloadTask task, Throwable e) {
+                                                        super.error(task, e);
+                                                        dialog.dismiss();
+                                                        new QMUITipDialog.Builder(AppSelectActivity.this).setIconType(QMUITipDialog.Builder.ICON_TYPE_FAIL).setTipWord("下载出错，请稍候再试.").create().show();
+                                                    }
+
+                                                    @Override
+                                                    protected void progress(BaseDownloadTask task, int soFarBytes, int totalBytes) {
+                                                        super.progress(task, soFarBytes, totalBytes);
+                                                        upDateDialogBuilder.getTextView().setText("正在下载 " + soFarBytes * 100 / totalBytes + "%");
+                                                    }
+                                                }).start();
+                                    }).addAction("取消", (dialog, index) -> {
+                                        FileDownloader.getImpl().clearAllTaskData();
+                                        dialog.dismiss();
+                                    });
+                            upDateDialogBuilder.show();
+
+
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            upDataTipDialog.dismiss();
+                            new QMUITipDialog.Builder(AppSelectActivity.this)
+                                    .setIconType(QMUITipDialog.Builder.ICON_TYPE_FAIL)
+                                    .setTipWord("未检查的更新")
+                                    .create()
+                                    .show();
+                        }
+
+                        @Override
+                        public void onComplete() {
+                            upDataTipDialog.dismiss();
+                        }
+                    });
+
+            return true;
+
+        }
+        return false;
     }
 
     @Override
@@ -625,87 +760,35 @@ public class AppSelectActivity extends AppCompatActivity {
 
     }
 
-    private void checkUpdate() {
-        if (System.currentTimeMillis() - PreferenceManager.getDefaultSharedPreferences(AppSelectActivity.this).getLong("lastUpdataTime", 0l) < 1000 * 60 * 5) {
+    private void upLoadErro(NewTaskBeanById taskBean) {
+        if (taskBean == null) {
             return;
         }
-        PreferenceManager.getDefaultSharedPreferences(AppSelectActivity.this).edit().putLong("lastUpdataTime", System.currentTimeMillis()).commit();
-        if (versionCode == -1) {
-            try {
-                PackageInfo packageInfo = AppSelectActivity.this.getApplicationContext().getPackageManager().getPackageInfo(AppSelectActivity.this.getPackageName(), 0);
-                versionCode = packageInfo.versionCode;
-            } catch (PackageManager.NameNotFoundException e) {
-                versionCode = -1;
-            }
-        }
-        if (versionCode == -1) {
+        PackageInfo packageInfo = com.stardust.utils.AppUtils.getPackageInfo(AppSelectActivity.this, taskBean.getF_PackageName());
+        if (packageInfo == null) {
             return;
         }
-        Date date = new Date(System.currentTimeMillis());
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        Request request = new Request.Builder().url("http://jhapi.u9er.com/ApkVersion.ashx?sign=" + MD5Security.getMD5(format.format(date) + "-mcw") + "&apkVersion=" + versionCode).build();
-        Log.e("aaa", request.url().toString());
-        try {
-            Response response = new MutableOkHttp().client().newCall(request).execute();
-            if (response == null || !response.isSuccessful() || response.body() == null) {
-                return;
-            }
-            String responseStr = response.body().string();
-            JSONObject jsonObject = new JSONObject(responseStr);
-            if (jsonObject == null || !jsonObject.has("apkMd5") || !jsonObject.has("downloadLink")) {
-                return;
-            }
-            final String apkmd5 = jsonObject.optString("apkMd5", "");
-            final String downloadLink = jsonObject.optString("downloadLink", "");
-            if (TextUtils.isEmpty(apkmd5) || TextUtils.isEmpty(downloadLink)) {
-                return;
-            }
-            File file = new File(FuctionUtils.getDiskCacheDir(AppSelectActivity.this, "inrt.apk"));
-            if (file != null && file.exists()) {
-                String md5 = MD5Security.getFileMD5(file);
-                Log.e("aaa", "md5-->" + md5);
-                if (!TextUtils.isEmpty(md5) && md5.equalsIgnoreCase(apkmd5)) {
-                    FuctionUtils.clientInstall(FuctionUtils.getDiskCacheDir(AppSelectActivity.this, "inrt.apk"));
-                    return;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Date date = new Date(System.currentTimeMillis());
+                    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+                    Request request = new Request.Builder().url(HttpConstant.URL_APP_ERRO +
+                            "?sign=" + MD5Security.getMD5(format.format(date) + "-mcw") +
+                            "&packageName=" + packageInfo.packageName +
+                            "&versionName=" + packageInfo.versionName +
+                            "&versionCode=" + packageInfo.versionCode +
+                            "&imei=" + getIMEI(AppSelectActivity.this) +
+                            "&appVersion=" + AppUtils.getPackageInfo(AppSelectActivity.this, "com.stardust.auojs.inrt").versionName
+                    ).build();
+                    Log.e("aaa", request.url().toString());
+                    new MutableOkHttp().client().newCall(request).execute();
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-                file.delete();
-
             }
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-
-                    FileDownloader.getImpl().create(downloadLink).setPath(FuctionUtils.getDiskCacheDir(AppSelectActivity.this, "inrt.apk")).setListener(new FileDownloadSampleListener() {
-                        @Override
-                        protected void completed(BaseDownloadTask task) {
-                            super.completed(task);
-                            Log.e("aaa", "下载完成-->" + task.getTargetFilePath() + "");
-                            new Thread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    String md5 = MD5Security.getFileMD5(new File(task.getTargetFilePath()));
-                                    Log.e("aaa", "开始安装" + md5);
-                                    if (!TextUtils.isEmpty(md5) && md5.equalsIgnoreCase(apkmd5)) {
-                                        Log.e("aaa", "开始安装");
-                                        FuctionUtils.clientInstall(task.getTargetFilePath());
-                                    }
-                                }
-                            }).start();
-                        }
-
-                        @Override
-                        protected void progress(BaseDownloadTask task, int soFarBytes, int totalBytes) {
-                            super.progress(task, soFarBytes, totalBytes);
-                            Log.e("aaa", "下载完成-->progress" + soFarBytes + "-" + totalBytes);
-
-                        }
-                    }).start();
-                }
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+        }).start();
     }
 
 

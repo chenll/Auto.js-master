@@ -276,7 +276,7 @@
         <item></item>
         <item>com.zhangku.qukandian:id/item_information_adapter_three_pic_title</item>
         <item>com.zhangku.qukandian:id/base_refresh_recyclerview</item>
-        <item>com.zhangku.qukandian:id/dialog_operate_close#com.zhangku.qukandian:id/cancleTV</item>
+        <item>com.zhangku.qukandian:id/dialog_operate_close#com.zhangku.qukandian:id/cancleTV#com.zhangku.qukandian:id/new_gold_dialog_btn</item>
         <item>com.zhangku.qukandian:id/layout_chai_baoxiang_chai_btn#com.zhangku.qukandian:id/dialog_sign_cancel</item>
         <item>3600000</item>
         <item>#FDE5E6</item>

@@ -39,7 +39,7 @@ public class LogActivity extends AppCompatActivity implements View.OnClickListen
     private void setupView() {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-//        toolbar.setTitle(mAppBean.getAppName());
+//        toolbar.setTitle(mAppBean.getApkName());
         toolbar.setTitle("运行日志");
         setSupportActionBar(toolbar);
         ConsoleView consoleView = (ConsoleView) findViewById(R.id.console);

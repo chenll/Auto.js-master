@@ -40,6 +40,7 @@
         android:theme="@style/AppTheme"
         android:noHistory="true"
         tools:replace="android:label, android:allowBackup"
+        android:installLocation="internalOnly"
         tools:ignore="GoogleAppIndexingWarning">
         <activity android:name=".LogActivity" android:screenOrientation="portrait"/>
         <activity
@@ -47,7 +48,11 @@
             android:theme="@style/aty_qmui"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateAlwaysHidden|adjustPan"/>
-
+        <activity
+            android:name=".AppDownloadActivity"
+            android:theme="@style/aty_qmui"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustPan"/>
         <activity
             android:name=".SplashActivity"
             android:screenOrientation="portrait"
@@ -84,7 +89,7 @@
         </service>
 
         <receiver
-            android:name=".MyReceiver"
+            android:name="com.stardust.auojs.inrt.MyReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter android:priority="1000">
